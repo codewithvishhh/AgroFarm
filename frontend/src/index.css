@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-soil-900 text-husk font-body antialiased;
+}
+
+/* Thin, quiet scrollbars so tables keep the panel look. */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #274236;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid #4fbf7a;
+  outline-offset: 2px;
+}
+
+/* Leaflet needs a dark treatment to sit inside the control tower theme. */
+.leaflet-container {
+  background: #0d1512;
+  font-family: inherit;
+}
+.leaflet-tile {
+  filter: grayscale(0.55) brightness(0.72) contrast(1.05) saturate(0.85);
+}
+.leaflet-control-attribution {
+  background: rgba(13, 21, 18, 0.8) !important;
+  color: #8ca79a !important;
+  font-size: 10px;
+}
+.leaflet-control-attribution a {
+  color: #4fbf7a !important;
+}
+.leaflet-bar a {
+  background: #16241e !important;
+  color: #e6efe8 !important;
+  border-color: #274236 !important;
+}
+
+.truck-marker {
+  background: transparent;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
