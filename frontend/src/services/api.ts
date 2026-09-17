@@ -25,6 +25,7 @@ import type {
   Shipment,
   ShipmentCreatePayload,
   ShipmentStatus,
+  RedistributionPrediction,
   Telemetry,
   TransactionType,
   Vehicle,
@@ -101,6 +102,12 @@ export const shipmentsApi = {
     http
       .get<{ risk: string; score: number; band: number[] }>(
         `/api/shipments/${id}/spoilage-risk`,
+      )
+      .then((r) => r.data),
+  redistributionPrediction: (id: string) =>
+    http
+      .get<RedistributionPrediction>(
+        `/api/shipments/${id}/redistribution-prediction`,
       )
       .then((r) => r.data),
 };

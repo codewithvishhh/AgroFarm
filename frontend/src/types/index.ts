@@ -248,6 +248,37 @@ export interface Forecast {
   trend_percentage: number;
 }
 
+export interface RedistributionRecommendation {
+  retailer_id: string;
+  name: string;
+  location: string;
+  distance_km: number;
+  estimated_daily_demand: number;
+  score: number;
+  suggested_quantity: number;
+  reason: string;
+}
+
+export interface RedistributionPrediction {
+  shipment_id: string;
+  produce_type: string;
+  risk: string;
+  risk_score: number;
+  predicted_arrival: string;
+  delivery_deadline: string | null;
+  late_minutes: number;
+  ml_prediction: {
+    predicted_delay_minutes: number;
+    training_examples: number;
+    model: string;
+  } | null;
+  freshness_window_hours: number;
+  should_redistribute: boolean;
+  reasons: string[];
+  recommendations: RedistributionRecommendation[];
+  method: string;
+}
+
 export interface Alert {
   id: number;
   shipment_id: string | null;

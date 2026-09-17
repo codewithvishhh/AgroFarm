@@ -20,6 +20,7 @@ from app.schemas.schemas import (
 from app.services import shipment_service
 from app.services.route_optimization_service import plan_route
 from app.services.spoilage_prediction_service import risk_score
+from app.services.redistribution_prediction_service import predict_redistribution
 
 router = APIRouter(prefix="/api/shipments", tags=["shipments"])
 
@@ -211,6 +212,15 @@ def spoilage_risk(shipment_id: str, db: Session = Depends(get_db)):
         "shipment_id": shipment.shipment_id,
         **risk_score(shipment.produce_type, shipment.temperature),
     }
+
+
+@router.get(
+    "/{shipment_id}/redistribution-prediction",
+    summary="Predict nearby market redistribution for a delayed shipment",
+)
+def redistribution_prediction(shipment_id: str, db: Session = Depends(get_db)):
+    shipment = _get(db, shipment_id)
+    return predict_redistribution(db, shipment)
 
 
 @router.delete("/{shipment_id}", status_code=204, summary="Delete a shipment")
