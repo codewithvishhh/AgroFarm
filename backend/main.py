@@ -12,6 +12,7 @@ from app.api import (
     alerts,
     analytics,
     auth,
+    chat,
     emergencies,
     forecast,
     inventory,
@@ -76,6 +77,7 @@ app.include_router(forecast.router)
 app.include_router(telemetry.router)
 app.include_router(notifications.router)
 app.include_router(analytics.router)
+app.include_router(chat.router)
 app.include_router(websocket_routes.router)
 
 

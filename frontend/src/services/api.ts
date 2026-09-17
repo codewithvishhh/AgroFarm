@@ -255,3 +255,10 @@ export const systemApi = {
   startSimulator: () => http.post("/api/telemetry/simulator/start"),
   stopSimulator: () => http.post("/api/telemetry/simulator/stop"),
 };
+
+export const assistantApi = {
+  chat: (messages: { role: "user" | "assistant"; content: string }[]) =>
+    http
+      .post<{ message: string }>("/api/chat", { messages })
+      .then((response) => response.data.message),
+};

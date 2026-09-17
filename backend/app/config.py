@@ -24,6 +24,8 @@ class Settings:
     # How many simulated seconds of travel each real second represents.
     SIMULATOR_SPEED_FACTOR: float = float(os.getenv("SIMULATOR_SPEED_FACTOR", "180"))
     SEED_DEMO_DATA: bool = os.getenv("SEED_DEMO_DATA", "true").lower() == "true"
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "").strip()
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.6-flash").strip()
 
 
 settings = Settings()

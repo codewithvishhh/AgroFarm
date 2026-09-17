@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import { pageTransition } from "../animations/variants";
+import { AgroAssistant } from "../components/AgroAssistant";
 import { Sidebar } from "../components/Sidebar";
 import { ToastHost } from "../components/ToastHost";
 import { Topbar } from "../components/Topbar";
@@ -41,6 +42,7 @@ export function AppLayout() {
           </AnimatePresence>
         </main>
       </div>
+      <AgroAssistant />
       <ToastHost />
     </div>
   );
