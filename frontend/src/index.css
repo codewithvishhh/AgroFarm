@@ -106,6 +106,21 @@ body {
   .preserve-3d {
     transform-style: preserve-3d;
   }
+  .translate-z-10 {
+    transform: translateZ(10px);
+  }
+  .translate-z-20 {
+    transform: translateZ(20px);
+  }
+  .translate-z-30 {
+    transform: translateZ(30px);
+  }
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .perspective-1400 {
+    perspective: 1400px;
+  }
   .backface-hidden {
     backface-visibility: hidden;
   }

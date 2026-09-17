@@ -65,14 +65,14 @@ export function TiltCard({
       onPointerMove={onMove}
       onPointerLeave={reset}
       style={style}
-      className={`relative transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-transform ${className}`}
+      className={`relative transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-transform [transform-style:preserve-3d] ${className}`}
     >
       {children}
       {glare && !reduced && (
         <span
           ref={glareRef}
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300"
+          className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 z-10"
         />
       )}
     </div>

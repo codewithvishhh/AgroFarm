@@ -1,5 +1,13 @@
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, Loader2, Sprout, User } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  Loader2,
+  ShieldCheck,
+  Sprout,
+  ThermometerSnowflake,
+  User,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -28,12 +36,28 @@ const ROLE_HINT: Record<Role, string> = {
   RETAILER: "Incoming loads, shelf stock, and demand forecast",
 };
 
-/** The same four capability lines the page has always carried. */
+/** The same four capability lines the page has always carried, paired with cinematic imagery. */
 const CAPABILITIES = [
-  "Live GPS and cold chain readings from farm gate to shelf.",
-  "Warehouse inventory with a full movement track record.",
-  "Emergency assistance that finds the nearest help on the map.",
-  "Demand forecasting from recorded daily sales.",
+  {
+    line: "Live GPS and cold chain readings from farm gate to shelf.",
+    image: "/images/truck_transport.jpg",
+    tag: "FLEET & LOGISTICS",
+  },
+  {
+    line: "Warehouse inventory with a full movement track record.",
+    image: "/images/warehouse_hub.jpg",
+    tag: "SMART WAREHOUSE",
+  },
+  {
+    line: "Emergency assistance that finds the nearest help on the map.",
+    image: "/images/farm_hero.jpg",
+    tag: "FARM TO GATE",
+  },
+  {
+    line: "Demand forecasting from recorded daily sales.",
+    image: "/images/crops_harvest.jpg",
+    tag: "FRESH PRODUCE",
+  },
 ];
 
 export function Login() {
@@ -95,6 +119,42 @@ export function Login() {
 
       {/* Hero. */}
       <header className="relative flex min-h-[86vh] flex-col items-center justify-center px-4 text-center">
+        {/* Floating 3D Telemetry Badges */}
+        <motion.div
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="absolute left-6 xl:left-14 top-14 hidden xl:flex items-center gap-3 rounded-2xl border border-crop/25 bg-canopy/80 px-4 py-2.5 backdrop-blur-md shadow-glass animate-floatSlow z-10"
+          style={{ transform: "translateZ(30px)" }}
+        >
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-crop/15 text-crop">
+            <ThermometerSnowflake size={18} />
+          </div>
+          <div className="text-left">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-crop animate-pulse" />
+              <span className="text-[11px] font-semibold text-husk">-4.2°C Cold Chain</span>
+            </div>
+            <span className="text-[10px] text-moss">Live Telemetry Active</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="absolute right-6 xl:right-14 top-14 hidden xl:flex items-center gap-3 rounded-2xl border border-crop/25 bg-canopy/80 px-4 py-2.5 backdrop-blur-md shadow-glass animate-floatSlow [animation-delay:-3s] z-10"
+          style={{ transform: "translateZ(30px)" }}
+        >
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-harvest/15 text-harvest">
+            <ShieldCheck size={18} />
+          </div>
+          <div className="text-left">
+            <span className="text-[11px] font-semibold text-husk">99.4% Freshness Rate</span>
+            <span className="block text-[10px] text-moss">Farm to Retail Verified</span>
+          </div>
+        </motion.div>
+
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -150,18 +210,35 @@ export function Login() {
         </motion.button>
       </header>
 
-      {/* Capability strip, same four lines as before, now as depth cards. */}
+      {/* Capability strip, same four lines as before, now as 3D visual cards. */}
       <section className="mx-auto grid max-w-6xl gap-4 px-4 pb-8 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
-        {CAPABILITIES.map((line, index) => (
-          <Reveal key={line} delay={index * 0.08}>
-            <TiltCard intensity={8} className="h-full">
-              <article className="glass edge-light h-full rounded-2xl p-5">
-                <span className="font-mono text-[11px] text-crop">
-                  0{index + 1}
-                </span>
-                <p className="mt-3 text-[12px] leading-relaxed text-husk/85">
-                  {line}
-                </p>
+        {CAPABILITIES.map((item, index) => (
+          <Reveal key={item.line} delay={index * 0.08}>
+            <TiltCard intensity={10} className="h-full group">
+              <article className="glass edge-light h-full rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-crop/45 hover:shadow-glow">
+                {/* 3D image preview header */}
+                <div className="relative h-36 w-full overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D1512] via-[#0D1512]/40 to-transparent" />
+                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                    <span className="font-mono text-[9px] tracking-wider font-semibold rounded-full border border-crop/30 bg-canopy/80 px-2 py-0.5 text-crop backdrop-blur">
+                      {item.tag}
+                    </span>
+                    <span className="font-mono text-[11px] text-husk/80 font-bold drop-shadow">
+                      0{index + 1}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-4 pt-2">
+                  <p className="text-[12px] leading-relaxed text-husk/85">
+                    {item.line}
+                  </p>
+                </div>
               </article>
             </TiltCard>
           </Reveal>
@@ -174,7 +251,14 @@ export function Login() {
         className="mx-auto flex max-w-6xl scroll-mt-24 flex-col items-center gap-8 px-4 py-16 sm:px-6 lg:flex-row lg:items-stretch"
       >
         <Reveal variant="depth" className="w-full lg:w-1/2">
-          <div className="glass-strong edge-light flex h-full flex-col justify-between rounded-3xl p-8">
+          <div className="glass-strong edge-light relative overflow-hidden flex h-full flex-col justify-between rounded-3xl p-8">
+            {/* Subtle atmospheric backdrop photo texture */}
+            <div
+              className="absolute inset-0 -z-10 bg-cover bg-center opacity-15 filter saturate-150 transition-opacity duration-700 hover:opacity-25"
+              style={{ backgroundImage: "url('/images/farm_hero.jpg')" }}
+            />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-canopy via-canopy/90 to-canopy/70" />
+
             <div>
               <p className="flex items-center gap-2 font-display text-2xl font-bold tracking-tight text-husk">
                 <Sprout size={24} className="text-crop" />
@@ -186,10 +270,10 @@ export function Login() {
             </div>
 
             <ul className="my-8 space-y-3 text-[12px] leading-relaxed text-moss">
-              {CAPABILITIES.map((line) => (
-                <li key={line} className="flex gap-2.5">
+              {CAPABILITIES.map((item) => (
+                <li key={item.line} className="flex gap-2.5">
                   <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-crop" />
-                  {line}
+                  {item.line}
                 </li>
               ))}
             </ul>
@@ -199,6 +283,7 @@ export function Login() {
             </p>
           </div>
         </Reveal>
+
 
         <Reveal variant="depth" delay={0.1} className="w-full lg:w-1/2">
           <TiltCard intensity={4} glare={false} className="h-full">
