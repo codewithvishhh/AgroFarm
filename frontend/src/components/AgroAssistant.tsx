@@ -2,6 +2,7 @@ import { Bot, ChevronRight, MessageCircle, Send, Sparkles, X } from "lucide-reac
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { useAuth } from "../hooks/useAuth";
+import { useLanguage } from "../i18n/LanguageContext";
 import { assistantApi } from "../services/api";
 import { ROLE_LABEL } from "../utils/navigation";
 
@@ -48,8 +49,24 @@ const SUGGESTIONS = [
   "How can I reduce spoilage?",
 ];
 
-function getReply(prompt: string, roleLabel: string) {
+function getReply(prompt: string, roleLabel: string, language: "en" | "hi") {
   const question = prompt.toLowerCase();
+
+  if (language === "hi") {
+    if (question.includes("tomato") || question.includes("टमाटर")) {
+      return "टमाटर की ताज़गी बनाए रखने के लिए:\n1. फटे या दबे फल अलग करें।\n2. पके टमाटर को हवा वाली जगह पर लगभग 12-15°C में रखें।\n3. कच्चे टमाटर को पके फलों से अलग रखें।\n4. ढुलाई के दौरान तापमान और नुकसान की जाँच करें।";
+    }
+    if (question.includes("spoilage") || question.includes("खराब")) {
+      return "उपज खराब होने का जोखिम घटाने के लिए:\n1. तापमान और देरी के अलर्ट जाँचें।\n2. जोखिम वाली उपज को उपयुक्त गोदाम में भेजें।\n3. खराब माल अलग करके इन्वेंटरी में दर्ज करें।\n4. कम शेल्फ-लाइफ़ वाली उपज को पहले भेजें।";
+    }
+    if (question.includes("shipment") || question.includes("खेप") || question.includes("delivery")) {
+      return "खेप की स्थिति के लिए Shipments खोलें और वाहन की लाइव स्थिति तथा ETA देखने के लिए Tracking चुनें। तापमान, देरी और मार्ग संबंधी अलर्ट पहले जाँचें।";
+    }
+    if (question.includes("inventory") || question.includes("stock") || question.includes("स्टॉक")) {
+      return "कम स्टॉक और हाल की आवाजाही देखने के लिए Inventory खोलें। अगला संग्रह तय करने से पहले Forecast में अनुमानित मांग की तुलना उपलब्ध स्टॉक से करें।";
+    }
+    return `${roleLabel} के रूप में आज सक्रिय अलर्ट और देरी से चल रही खेपों से शुरुआत करें। फिर डैशबोर्ड पर उन मामलों को देखें जिन पर निर्णय लेना ज़रूरी है।`;
+  }
 
   if (question.includes("tomato") || question.includes("tomatoes")) {
     return "For tomatoes, slow ripening without trapping moisture:"
@@ -94,13 +111,14 @@ function isUsefulAnswer(answer: string) {
 
 export function AgroAssistant() {
   const { session } = useAuth();
+  const { language, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
 
-  const roleLabel = session ? ROLE_LABEL[session.role] : "team member";
+  const roleLabel = session ? t(ROLE_LABEL[session.role]) : "team member";
 
   useEffect(() => {
     if (open) endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,11 +140,11 @@ export function AgroAssistant() {
           content: text,
         })),
         { role: "user", content: trimmed },
-      ]);
+      ], language);
       const context = [...messages.map(({ text }) => text), trimmed].join(" ");
       const answer = isUsefulAnswer(response)
         ? response
-        : getReply(context, roleLabel);
+        : getReply(context, roleLabel, language);
       setMessages((current) => [...current, { id: id + 1, from: "assistant", text: answer }]);
     } catch {
       setMessages((current) => [
@@ -134,7 +152,9 @@ export function AgroAssistant() {
         {
           id: id + 1,
           from: "assistant",
-          text: `${getReply(trimmed, roleLabel)} Gemini is currently unavailable, so this is a local guidance response.`,
+          text: language === "hi"
+            ? `${getReply(trimmed, roleLabel, language)} Gemini अभी उपलब्ध नहीं है, इसलिए यह स्थानीय सुझाव है।`
+            : `${getReply(trimmed, roleLabel, language)} Gemini is currently unavailable, so this is a local guidance response.`,
         },
       ]);
     } finally {
@@ -151,7 +171,7 @@ export function AgroAssistant() {
     <div className="fixed bottom-5 right-5 z-40 sm:bottom-6 sm:right-6">
       {open && (
         <section
-          aria-label="AgroFarm assistant"
+          aria-label={t("AgroFarm assistant")}
           className="mb-3 flex h-[min(620px,calc(100vh-7rem))] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-soil-500 bg-soil-800 shadow-2xl shadow-black/40"
         >
           <header className="flex items-center justify-between border-b border-husk/8 bg-canopy/60 px-4 py-3 backdrop-blur">
@@ -160,10 +180,10 @@ export function AgroAssistant() {
                 <Bot size={19} />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-husk">AgroFarm assistant</h2>
+                <h2 className="text-sm font-semibold text-husk">{t("AgroFarm assistant")}</h2>
                 <p className="mt-0.5 flex items-center gap-1.5 text-[10px] text-moss">
                   <span className="h-1.5 w-1.5 rounded-full bg-crop" />
-                  Ready to help with operations
+                  {t("Ready to help with operations")}
                 </p>
               </div>
             </div>
@@ -171,7 +191,7 @@ export function AgroAssistant() {
               type="button"
               onClick={() => setOpen(false)}
               className="rounded-lg p-2 text-moss transition-colors hover:bg-soil-700 hover:text-husk"
-              aria-label="Close assistant"
+              aria-label={t("Close assistant")}
             >
               <X size={16} />
             </button>
@@ -184,11 +204,11 @@ export function AgroAssistant() {
                   <div className="mb-3 flex items-center gap-2 text-crop">
                     <Sparkles size={15} />
                     <span className="text-[11px] font-semibold uppercase tracking-[0.14em]">
-                      Quick start
+                      {t("Quick start")}
                     </span>
                   </div>
                   <p className="text-sm leading-6 text-husk">
-                    Ask me about your supply chain, exceptions, or what deserves attention next.
+                    {t("Ask me about your supply chain, exceptions, or what deserves attention next.")}
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -199,7 +219,7 @@ export function AgroAssistant() {
                       onClick={() => submit(suggestion)}
                       className="flex w-full items-center justify-between rounded-lg border border-soil-600 px-3 py-2.5 text-left text-xs text-moss transition-colors hover:border-crop/50 hover:text-husk"
                     >
-                      {suggestion}
+                      {t(suggestion)}
                       <ChevronRight size={14} />
                     </button>
                   ))}
@@ -228,7 +248,7 @@ export function AgroAssistant() {
                   </div>
                 ))}
                 {thinking && (
-                  <div className="flex items-center gap-1.5 text-moss" aria-label="Assistant is thinking">
+                  <div className="flex items-center gap-1.5 text-moss" aria-label={t("Assistant is thinking")}>
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-crop" />
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-crop [animation-delay:120ms]" />
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-crop [animation-delay:240ms]" />
@@ -246,23 +266,23 @@ export function AgroAssistant() {
                 onClick={() => setMessages([])}
                 className="mb-2 text-[10px] text-moss transition-colors hover:text-husk"
               >
-                Clear conversation
+                {t("Clear conversation")}
               </button>
             )}
             <form onSubmit={handleSubmit} className="flex items-center gap-2">
-              <label className="sr-only" htmlFor="assistant-message">Message AgroFarm assistant</label>
+              <label className="sr-only" htmlFor="assistant-message">{t("Message AgroFarm assistant")}</label>
               <input
                 id="assistant-message"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                placeholder="Ask about operations..."
+                placeholder={t("Ask about operations...")}
                 className="min-w-0 flex-1 rounded-lg border border-husk/12 bg-soil-800/55 backdrop-blur px-3 py-2.5 text-xs text-husk placeholder:text-moss/70 focus:border-crop/60 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!draft.trim() || thinking}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-crop text-soil-900 transition-colors hover:bg-crop/90 disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Send message"
+                aria-label={t("Send message")}
               >
                 <Send size={15} />
               </button>
@@ -275,7 +295,7 @@ export function AgroAssistant() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         className="ml-auto flex h-12 w-12 items-center justify-center rounded-full bg-crop text-soil-900 shadow-lg shadow-crop/20 transition-transform hover:scale-105 hover:bg-crop/90"
-        aria-label={open ? "Close AgroFarm assistant" : "Open AgroFarm assistant"}
+        aria-label={t(open ? "Close AgroFarm assistant" : "Open AgroFarm assistant")}
         aria-expanded={open}
       >
         {open ? <X size={20} /> : <MessageCircle size={20} />}

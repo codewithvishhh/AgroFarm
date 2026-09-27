@@ -264,8 +264,11 @@ export const systemApi = {
 };
 
 export const assistantApi = {
-  chat: (messages: { role: "user" | "assistant"; content: string }[]) =>
+  chat: (
+    messages: { role: "user" | "assistant"; content: string }[],
+    language: "en" | "hi" = "en",
+  ) =>
     http
-      .post<{ message: string }>("/api/chat", { messages })
+      .post<{ message: string }>("/api/chat", { messages, language })
       .then((response) => response.data.message),
 };

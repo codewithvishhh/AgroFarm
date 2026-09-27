@@ -20,6 +20,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(min_length=1, max_length=20)
+    language: Literal["en", "hi"] = "en"
 
 
 class ChatResponse(BaseModel):
@@ -75,7 +76,18 @@ async def chat(payload: ChatRequest):
         for item in payload.messages
     ]
     body = {
-        "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "system_instruction": {
+            "parts": [
+                {
+                    "text": SYSTEM_PROMPT
+                    + (
+                        " Reply entirely in Hindi."
+                        if payload.language == "hi"
+                        else " Reply entirely in English."
+                    )
+                }
+            ]
+        },
         "contents": contents,
         "generationConfig": {"temperature": 0.4, "maxOutputTokens": 512},
     }
