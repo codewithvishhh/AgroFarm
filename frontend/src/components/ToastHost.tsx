@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import { toastMotion } from "../animations/variants";
 import { useLive } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const TONE_STYLES = {
   info: "border-chill/35 bg-chill/10",
@@ -12,6 +13,7 @@ const TONE_STYLES = {
 
 export function ToastHost() {
   const { toasts, dismissToast } = useLive();
+  const { t } = useLanguage();
 
   return (
     <div className="pointer-events-none fixed bottom-6 right-6 z-[60] flex w-80 flex-col gap-2">
@@ -30,18 +32,18 @@ export function ToastHost() {
           >
             <div className="flex items-start justify-between gap-3">
               <p className="text-xs font-medium capitalize text-husk">
-                {toast.title}
+                {t(toast.title)}
               </p>
               <button
                 onClick={() => dismissToast(toast.id)}
                 className="text-moss hover:text-husk"
-                aria-label="Dismiss"
+                aria-label={t("Dismiss")}
               >
                 ×
               </button>
             </div>
             <p className="mt-1 text-[11px] leading-relaxed text-husk/80">
-              {toast.message}
+              {t(toast.message)}
             </p>
           </motion.div>
         ))}

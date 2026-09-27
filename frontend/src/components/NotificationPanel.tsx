@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 
 import { listItem, listStagger } from "../animations/variants";
 import { useLive } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { timeAgo } from "../utils/format";
 
 interface NotificationPanelProps {
@@ -12,6 +13,7 @@ interface NotificationPanelProps {
 
 export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
   const { notifications, markAllRead } = useLive();
+  const { t } = useLanguage();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,12 +44,12 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
           className="absolute right-0 top-12 z-50 w-[22rem] overflow-hidden rounded-2xl border border-husk/12 bg-soil-800/55 backdrop-blur shadow-panel"
         >
           <header className="flex items-center justify-between border-b border-husk/8 px-4 py-3">
-            <p className="font-display text-sm text-husk">Notifications</p>
+            <p className="font-display text-sm text-husk">{t("Notifications")}</p>
             <button
               onClick={markAllRead}
               className="text-[11px] text-moss hover:text-crop"
             >
-              Mark all read
+              {t("Mark all read")}
             </button>
           </header>
 
@@ -59,7 +61,7 @@ export function NotificationPanel({ open, onClose }: NotificationPanelProps) {
           >
             {notifications.length === 0 && (
               <li className="px-4 py-8 text-center text-xs text-moss">
-                Nothing yet. Dispatch a shipment to start the feed.
+                {t("Nothing yet. Dispatch a shipment to start the feed.")}
               </li>
             )}
             {notifications.map((notification) => (
