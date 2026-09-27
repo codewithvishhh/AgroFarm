@@ -15,7 +15,9 @@ import { Button } from "../components/Button";
 import { Reveal } from "../components/Reveal";
 import { ScrollWorld } from "../components/ScrollWorld";
 import { TiltCard } from "../components/TiltCard";
+import { LanguageToggle } from "../components/LanguageToggle";
 import { useAuth } from "../hooks/useAuth";
+import { useLanguage } from "../i18n/LanguageContext";
 import { authApi } from "../services/api";
 import type { Role } from "../types";
 import { ROLE_LABEL } from "../utils/navigation";
@@ -63,6 +65,7 @@ const CAPABILITIES = [
 export function Login() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [role, setRole] = useState<Role>("FARMER");
   const [busy, setBusy] = useState(false);
@@ -75,7 +78,7 @@ export function Login() {
   // Authentication is unchanged: name plus role, then straight to the dashboard.
   const submit = async () => {
     if (!name.trim()) {
-      setError("Enter your name to continue.");
+      setError(t("Enter your name to continue."));
       return;
     }
     setBusy(true);
@@ -105,13 +108,14 @@ export function Login() {
             Agro<span className="-ml-2 text-crop">Farm</span>
           </p>
           <p className="hidden text-[11px] text-moss md:block">
-            Smart Agricultural Supply Chain Platform
+            {t("Smart Agricultural Supply Chain Platform")}
           </p>
+          <LanguageToggle />
           <button
             onClick={scrollToForm}
             className="inline-flex items-center gap-1.5 rounded-full border border-husk/15 bg-husk/6 px-4 py-1.5 text-[11px] text-husk backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:border-crop/50 hover:text-crop"
           >
-            Enter AgroFarm
+            {t("Enter AgroFarm")}
             <ArrowRight size={12} />
           </button>
         </div>
@@ -135,7 +139,7 @@ export function Login() {
               <span className="h-2 w-2 rounded-full bg-crop animate-pulse" />
               <span className="text-[11px] font-semibold text-husk">-4.2°C Cold Chain</span>
             </div>
-            <span className="text-[10px] text-moss">Live Telemetry Active</span>
+              <span className="text-[10px] text-moss">{t("Live Telemetry Active")}</span>
           </div>
         </motion.div>
 
@@ -150,8 +154,8 @@ export function Login() {
             <ShieldCheck size={18} />
           </div>
           <div className="text-left">
-            <span className="text-[11px] font-semibold text-husk">99.4% Freshness Rate</span>
-            <span className="block text-[10px] text-moss">Farm to Retail Verified</span>
+            <span className="text-[11px] font-semibold text-husk">{t("99.4% Freshness Rate")}</span>
+            <span className="block text-[10px] text-moss">{t("Farm to Retail Verified")}</span>
           </div>
         </motion.div>
 
@@ -161,7 +165,7 @@ export function Login() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-[11px] uppercase tracking-[0.42em] text-crop/80"
         >
-          Farm gate to shelf
+          {t("Farm gate to shelf")}
         </motion.p>
 
         <motion.h1
@@ -179,7 +183,7 @@ export function Login() {
           transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
           className="mt-6 max-w-xl text-sm leading-relaxed text-husk/80 sm:text-base"
         >
-          Smart Agricultural Supply Chain Platform
+          {t("Smart Agricultural Supply Chain Platform")}
         </motion.p>
 
         <motion.div
@@ -189,7 +193,7 @@ export function Login() {
           className="mt-8 flex flex-wrap items-center justify-center gap-3"
         >
           <Button onClick={scrollToForm} className="px-5 py-2.5 text-sm">
-            Enter AgroFarm
+            {t("Enter AgroFarm")}
             <ArrowRight size={14} />
           </Button>
         </motion.div>
@@ -203,9 +207,9 @@ export function Login() {
             y: { duration: 2.4, repeat: Infinity, ease: "easeInOut" },
           }}
           className="absolute bottom-8 flex flex-col items-center gap-1 text-[10px] uppercase tracking-[0.3em] text-moss"
-          aria-label="Scroll to sign in"
+          aria-label={t("Scroll to sign in")}
         >
-          Scroll
+          {t("Scroll")}
           <ChevronDown size={14} />
         </motion.button>
       </header>
@@ -227,7 +231,7 @@ export function Login() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0D1512] via-[#0D1512]/40 to-transparent" />
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
                     <span className="font-mono text-[9px] tracking-wider font-semibold rounded-full border border-crop/30 bg-canopy/80 px-2 py-0.5 text-crop backdrop-blur">
-                      {item.tag}
+                      {t(item.tag)}
                     </span>
                     <span className="font-mono text-[11px] text-husk/80 font-bold drop-shadow">
                       0{index + 1}
@@ -236,7 +240,7 @@ export function Login() {
                 </div>
                 <div className="p-4 pt-2">
                   <p className="text-[12px] leading-relaxed text-husk/85">
-                    {item.line}
+                    {t(item.line)}
                   </p>
                 </div>
               </article>
@@ -265,7 +269,7 @@ export function Login() {
                 Agro<span className="-ml-2 text-crop">Farm</span>
               </p>
               <p className="mt-2 text-sm text-moss">
-                Smart Agricultural Supply Chain Platform
+                {t("Smart Agricultural Supply Chain Platform")}
               </p>
             </div>
 
@@ -273,13 +277,13 @@ export function Login() {
               {CAPABILITIES.map((item) => (
                 <li key={item.line} className="flex gap-2.5">
                   <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-crop" />
-                  {item.line}
+                  {t(item.line)}
                 </li>
               ))}
             </ul>
 
             <p className="text-[11px] text-moss/70">
-              Hackathon prototype. Sign in with any name and pick a role.
+              {t("Hackathon prototype. Sign in with any name and pick a role.")}
             </p>
           </div>
         </Reveal>
@@ -293,14 +297,14 @@ export function Login() {
                 Agro<span className="-ml-2 text-crop">Farm</span>
               </p>
               <h1 className="mt-4 font-display text-lg text-husk lg:mt-0">
-                Enter AgroFarm
+                {t("Enter AgroFarm")}
               </h1>
               <p className="mt-1 text-xs text-moss">
-                Your role decides which dashboard opens.
+                {t("Your role decides which dashboard opens.")}
               </p>
 
               <label className="mt-6 block text-[11px] text-moss">
-                Enter your name
+                {t("Enter your name")}
                 <span
                   className={`relative mt-1 flex items-center rounded-xl border bg-canopy/50 transition-all duration-200 ${
                     focused
@@ -320,7 +324,7 @@ export function Login() {
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     onKeyDown={(event) => event.key === "Enter" && submit()}
-                    placeholder="Rahul"
+                    placeholder={t("Rahul")}
                     className="w-full rounded-xl bg-transparent px-3 py-2.5 text-sm text-husk outline-none placeholder:text-moss/50"
                   />
                 </span>
@@ -328,7 +332,7 @@ export function Login() {
 
               <fieldset className="mt-5">
                 <legend className="text-[11px] text-moss">
-                  Select your role
+                  {t("Select your role")}
                 </legend>
                 <div className="mt-2 grid gap-2">
                   {ROLES.map((option) => (
@@ -347,10 +351,10 @@ export function Login() {
                           role === option ? "text-crop" : "text-husk"
                         }`}
                       >
-                        {ROLE_LABEL[option]}
+                        {t(ROLE_LABEL[option])}
                       </span>
                       <span className="mt-0.5 block text-[11px] text-moss">
-                        {ROLE_HINT[option]}
+                        {t(ROLE_HINT[option])}
                       </span>
                       {role === option && (
                         <motion.span
@@ -380,7 +384,7 @@ export function Login() {
                 className="mt-6 w-full py-2.5 text-sm"
               >
                 {busy && <Loader2 size={14} className="animate-spin" />}
-                {busy ? "Opening" : "Enter AgroFarm"}
+                {busy ? t("Opening") : t("Enter AgroFarm")}
               </Button>
             </div>
           </TiltCard>
@@ -388,7 +392,7 @@ export function Login() {
       </section>
 
       <footer className="px-4 pb-10 text-center text-[11px] text-moss/60">
-        AgroFarm — Smart Agricultural Supply Chain Platform
+        AgroFarm — {t("Smart Agricultural Supply Chain Platform")}
       </footer>
     </div>
   );
