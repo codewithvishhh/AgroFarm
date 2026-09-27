@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 
 import type { ShipmentStage } from "../types";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const STAGES: { key: ShipmentStage; label: string }[] = [
   { key: "FARM", label: "Farmer" },
@@ -12,6 +13,7 @@ const STAGES: { key: ShipmentStage; label: string }[] = [
 
 /** Farm to retail lifecycle, with the current stage highlighted. */
 export function ShipmentTimeline({ stage }: { stage: ShipmentStage }) {
+  const { t } = useLanguage();
   const currentIndex = STAGES.findIndex((item) => item.key === stage);
 
   return (
@@ -31,7 +33,7 @@ export function ShipmentTimeline({ stage }: { stage: ShipmentStage }) {
               }`}
             >
               {done && <Check size={12} />}
-              {item.label}
+              {t(item.label)}
             </span>
             {index < STAGES.length - 1 && (
               <span
