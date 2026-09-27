@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface PanelProps {
   title?: string;
@@ -28,6 +29,7 @@ export function Panel({
   bodyClassName = "p-5",
 }: PanelProps) {
   const reduced = useReducedMotion();
+  const { t } = useLanguage();
 
   const body = (
     <>
@@ -36,11 +38,11 @@ export function Panel({
           <div>
             {title && (
               <h2 className="font-display text-sm font-semibold tracking-tight text-husk">
-                {title}
+                {t(title)}
               </h2>
             )}
             {description && (
-              <p className="mt-1 text-xs text-moss">{description}</p>
+              <p className="mt-1 text-xs text-moss">{t(description)}</p>
             )}
           </div>
           {action}
