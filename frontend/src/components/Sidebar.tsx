@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
 import { useLive } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { NAVIGATION } from "../utils/navigation";
 
 interface SidebarProps {
@@ -14,6 +15,7 @@ interface SidebarProps {
 export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
   const { session, signOut } = useAuth();
   const { connected } = useLive();
+  const { t } = useLanguage();
   const links = session ? NAVIGATION[session.role] : [];
 
   const content = (
@@ -25,13 +27,13 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             Agro<span className="-ml-2 text-crop">Farm</span>
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-moss">
-            Smart Agricultural Supply Chain Platform
+            {t("Smart Agricultural Supply Chain Platform")}
           </p>
         </div>
         <button
           onClick={onClose}
           className="text-moss lg:hidden"
-          aria-label="Close menu"
+          aria-label={t("Close menu")}
         >
           <X size={16} />
         </button>
@@ -54,7 +56,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
                   className={`relative ${isActive ? "text-crop" : ""}`}
                 />
                 <span className={`relative ${isActive ? "text-crop" : ""}`}>
-                  {link.label}
+                  {t(link.label)}
                 </span>
               </span>
             )}
@@ -71,11 +73,11 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
               }`}
             />
             <p className="text-[11px] text-moss">
-              {connected ? "Live feed connected" : "Reconnecting to feed"}
+              {connected ? t("Live feed connected") : t("Reconnecting to feed")}
             </p>
           </div>
           <p className="mt-2 text-[11px] leading-relaxed text-moss/70">
-            GPS and sensor readings refresh every few seconds.
+            {t("GPS and sensor readings refresh every few seconds.")}
           </p>
         </div>
 
@@ -84,7 +86,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
           className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-moss transition-all duration-200 hover:translate-x-0.5 hover:bg-rot/10 hover:text-rot"
         >
           <LogOut size={15} />
-          Logout
+          {t("Logout")}
         </button>
       </div>
     </>
