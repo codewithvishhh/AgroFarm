@@ -9,11 +9,13 @@ import { Sidebar } from "../components/Sidebar";
 import { ToastHost } from "../components/ToastHost";
 import { Topbar } from "../components/Topbar";
 import { useOffline } from "../hooks/useOffline";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export function AppLayout() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { t } = useLanguage();
 
   // Coming back online remounts the routed page, which refetches its data.
   const online = useOffline(useCallback(() => setRefreshKey((n) => n + 1), []));
@@ -26,8 +28,7 @@ export function AppLayout() {
         <Topbar online={online} onMenu={() => setMenuOpen(true)} />
         {!online && (
           <p className="glass mx-3 rounded-xl border-harvest/30 bg-harvest/10 px-6 py-2 text-[11px] text-harvest">
-            Offline. Showing the last data cached on this device. AgroFarm
-            refreshes automatically when the connection returns.
+            {t("Offline. Showing the last data cached on this device. AgroFarm refreshes automatically when the connection returns.")}
           </p>
         )}
         <main className="scene flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
