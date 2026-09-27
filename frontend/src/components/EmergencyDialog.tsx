@@ -5,6 +5,7 @@ import { useState } from "react";
 import { dialogMotion } from "../animations/variants";
 import { emergenciesApi } from "../services/api";
 import type { EmergencyDetail, EmergencyType, FleetRow } from "../types";
+import { useLanguage } from "../i18n/LanguageContext";
 import { Button } from "./Button";
 
 const TYPES: { value: EmergencyType; label: string }[] = [
@@ -32,6 +33,7 @@ export function EmergencyDialog({
   onClose,
   onCreated,
 }: EmergencyDialogProps) {
+  const { language, t } = useLanguage();
   const [vehicleId, setVehicleId] = useState("");
   const [type, setType] = useState<EmergencyType>("PUNCTURE");
   const [description, setDescription] = useState("");
@@ -43,7 +45,7 @@ export function EmergencyDialog({
   const submit = async () => {
     setError(null);
     if (!vehicleId) {
-      setError("Select the vehicle that needs help.");
+      setError(t("Select the vehicle that needs help."));
       return;
     }
     setSaving(true);
@@ -87,24 +89,23 @@ export function EmergencyDialog({
               <AlertOctagon size={16} className="text-rot" />
               <div>
                 <h2 className="font-display text-sm text-husk">
-                  Report an emergency
+                  {t("Report an emergency")}
                 </h2>
                 <p className="mt-0.5 text-[11px] text-moss">
-                  The current GPS position is captured and nearby help is listed
-                  straight away.
+                  {t("The current GPS position is captured and nearby help is listed straight away.")}
                 </p>
               </div>
             </header>
 
             <div className="space-y-4 px-5 py-5">
               <label className="block text-[11px] text-moss">
-                Vehicle
+                {t("Vehicle")}
                 <select
                   value={vehicleId}
                   onChange={(event) => setVehicleId(event.target.value)}
                   className={`mt-1 ${fieldClass}`}
                 >
-                  <option value="">Select a vehicle</option>
+                  <option value="">{t("Select a vehicle")}</option>
                   {fleet.map((row) => (
                     <option key={row.vehicle_id} value={row.vehicle_id}>
                       {row.vehicle_number} · {row.driver_name}
@@ -114,7 +115,7 @@ export function EmergencyDialog({
               </label>
 
               <label className="block text-[11px] text-moss">
-                Issue
+                {t("Issue")}
                 <select
                   value={type}
                   onChange={(event) =>
@@ -124,27 +125,28 @@ export function EmergencyDialog({
                 >
                   {TYPES.map((item) => (
                     <option key={item.value} value={item.value}>
-                      {item.label}
+                      {t(item.label)}
                     </option>
                   ))}
                 </select>
               </label>
 
               <label className="block text-[11px] text-moss">
-                What happened
+                {t("What happened")}
                 <textarea
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                   rows={3}
-                  placeholder="Rear tyre burst near the bypass"
+                  placeholder={t("Rear tyre burst near the bypass")}
                   className={`mt-1 ${fieldClass} resize-none placeholder:text-moss/50`}
                 />
               </label>
 
               {selected?.shipment_id && (
                 <p className="rounded-lg border border-soil-600 bg-husk/4 px-3 py-2 text-[11px] text-moss">
-                  Carrying {selected.produce_type} on {selected.shipment_id} to{" "}
-                  {selected.destination}.
+                  {language === "hi"
+                    ? `${selected.shipment_id} · ${t(selected.produce_type ?? "")} की खेप · ${t("Destination:")} ${selected.destination}`
+                    : `Carrying ${selected.produce_type} on ${selected.shipment_id} to ${selected.destination}.`}
                 </p>
               )}
 
@@ -157,10 +159,10 @@ export function EmergencyDialog({
 
             <footer className="flex justify-end gap-2 border-t border-husk/8 px-5 py-4">
               <Button variant="ghost" onClick={onClose}>
-                Cancel
+                {t("Cancel")}
               </Button>
               <Button variant="danger" onClick={submit} disabled={saving}>
-                {saving ? "Sending" : "Request assistance"}
+                {saving ? t("Sending") : t("Request assistance")}
               </Button>
             </footer>
           </motion.div>
