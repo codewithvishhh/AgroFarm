@@ -9,12 +9,14 @@ import { ProgressTrack } from "../components/ProgressTrack";
 import { StatusBadge } from "../components/StatusBadge";
 import { useFetch } from "../hooks/useFetch";
 import { useLive, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { shipmentsApi, vehiclesApi } from "../services/api";
 import type { Shipment, VehicleStatus } from "../types";
 import { formatEta, titleCase } from "../utils/format";
 
 export function Fleet() {
   const { pushToast } = useLive();
+  const { t } = useLanguage();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -41,13 +43,13 @@ export function Fleet() {
       await vehiclesApi.setStatus(vehicleId, status);
       await fleet.reload();
       pushToast({
-        title: "Vehicle updated",
-        message: `Status set to ${titleCase(status)}.`,
+        title: t("Vehicle updated"),
+        message: `${t("Status set to")} ${t(titleCase(status))}.`,
         tone: "good",
       });
     } catch (exception) {
       pushToast({
-        title: "Update failed",
+        title: t("Update failed"),
         message: (exception as Error).message,
         tone: "danger",
       });
@@ -62,13 +64,13 @@ export function Fleet() {
       await shipmentsApi.assignVehicle(shipmentId, vehicleId);
       await Promise.all([fleet.reload(), shipments.reload()]);
       pushToast({
-        title: "Vehicle assigned",
+        title: t("Vehicle assigned"),
         message: `${shipmentId} now has a truck.`,
         tone: "good",
       });
     } catch (exception) {
       pushToast({
-        title: "Assignment failed",
+        title: t("Assignment failed"),
         message: (exception as Error).message,
         tone: "danger",
       });
@@ -83,13 +85,13 @@ export function Fleet() {
       await shipmentsApi.dispatch(shipmentId);
       await fleet.reload();
       pushToast({
-        title: "Shipment started",
-        message: `${shipmentId} is moving. Watch it on the live map.`,
+        title: t("Shipment started"),
+        message: `${t("Shipment")} ${shipmentId} · ${t("Watch it on the live map.")}`,
         tone: "good",
       });
     } catch (exception) {
       pushToast({
-        title: "Dispatch failed",
+        title: t("Dispatch failed"),
         message: (exception as Error).message,
         tone: "danger",
       });
@@ -104,7 +106,7 @@ export function Fleet() {
     <div className="space-y-5">
       <div className="flex justify-end">
         <Button variant="danger" onClick={() => setDialogOpen(true)}>
-          Report emergency
+          {t("Report emergency")}
         </Button>
       </div>
 
@@ -117,13 +119,13 @@ export function Fleet() {
           <table className="w-full min-w-[62rem] text-left text-sm">
             <thead>
               <tr className="text-[11px] text-moss">
-                <th className="px-5 py-3 font-medium">Vehicle</th>
-                <th className="px-5 py-3 font-medium">Driver</th>
-                <th className="px-5 py-3 font-medium">Status</th>
-                <th className="px-5 py-3 font-medium">Current location</th>
-                <th className="px-5 py-3 font-medium">Assigned shipment</th>
-                <th className="px-5 py-3 font-medium">Progress</th>
-                <th className="px-5 py-3 font-medium">Actions</th>
+                <th className="px-5 py-3 font-medium">{t("Vehicle")}</th>
+                <th className="px-5 py-3 font-medium">{t("Driver")}</th>
+                <th className="px-5 py-3 font-medium">{t("Status")}</th>
+                <th className="px-5 py-3 font-medium">{t("Current location")}</th>
+                <th className="px-5 py-3 font-medium">{t("Assigned shipment")}</th>
+                <th className="px-5 py-3 font-medium">{t("Progress")}</th>
+                <th className="px-5 py-3 font-medium">{t("Actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-husk/8">
@@ -132,7 +134,7 @@ export function Fleet() {
                   <td className="px-5 py-3">
                     <p className="text-xs text-husk">{row.vehicle_number}</p>
                     <p className="text-[11px] text-moss">
-                      {titleCase(row.vehicle_type)} ·{" "}
+                      {t(titleCase(row.vehicle_type))} ·{" "}
                       {row.capacity.toLocaleString()} kg
                     </p>
                   </td>
@@ -162,11 +164,11 @@ export function Fleet() {
                           {row.shipment_id}
                         </Link>
                         <p className="text-[11px] text-moss">
-                          {row.produce_type} to {row.destination}
+                          {t(row.produce_type ?? "")} · {t("Destination:")} {row.destination}
                         </p>
                       </>
                     ) : (
-                      <span className="text-moss">Idle</span>
+                      <span className="text-moss">{t("Idle")}</span>
                     )}
                   </td>
                   <td className="w-40 px-5 py-3">
@@ -187,7 +189,7 @@ export function Fleet() {
                             assign(row.vehicle_id, assignable[0].shipment_id)
                           }
                         >
-                          Assign load
+                          {t("Assign load")}
                         </Button>
                       )}
                       {row.status === "ASSIGNED" && row.shipment_id && (
@@ -195,7 +197,7 @@ export function Fleet() {
                           disabled={busy === row.vehicle_id}
                           onClick={() => start(row.vehicle_id, row.shipment_id!)}
                         >
-                          Start shipment
+                          {t("Start shipment")}
                         </Button>
                       )}
                       {row.status !== "MAINTENANCE" ? (
@@ -206,7 +208,7 @@ export function Fleet() {
                             setStatus(row.vehicle_id, "MAINTENANCE")
                           }
                         >
-                          Maintenance
+                          {t("Maintenance")}
                         </Button>
                       ) : (
                         <Button
@@ -214,7 +216,7 @@ export function Fleet() {
                           disabled={busy === row.vehicle_id}
                           onClick={() => setStatus(row.vehicle_id, "AVAILABLE")}
                         >
-                          Back in service
+                          {t("Back in service")}
                         </Button>
                       )}
                     </div>
