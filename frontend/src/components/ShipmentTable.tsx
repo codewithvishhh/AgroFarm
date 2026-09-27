@@ -3,23 +3,26 @@ import { Link } from "react-router-dom";
 
 import { listItem, listStagger } from "../animations/variants";
 import type { Shipment } from "../types";
-import { formatEta, formatQuantity, titleCase } from "../utils/format";
+import { useLanguage } from "../i18n/LanguageContext";
+import { formatEta, formatQuantity, formatRoute, titleCase } from "../utils/format";
 import { ProgressTrack } from "./ProgressTrack";
 import { StatusBadge } from "./StatusBadge";
 
 export function ShipmentTable({ shipments }: { shipments: Shipment[] }) {
+  const { language, t } = useLanguage();
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[52rem] border-collapse text-left text-sm">
         <thead>
           <tr className="text-[11px] text-moss">
-            <th className="px-5 py-3 font-medium">Shipment</th>
-            <th className="px-5 py-3 font-medium">Route</th>
-            <th className="px-5 py-3 font-medium">Load</th>
-            <th className="px-5 py-3 font-medium">Stage</th>
-            <th className="px-5 py-3 font-medium">Sensors</th>
-            <th className="px-5 py-3 font-medium">Progress</th>
-            <th className="px-5 py-3 font-medium">Status</th>
+            <th className="px-5 py-3 font-medium">{t("Shipment")}</th>
+            <th className="px-5 py-3 font-medium">{t("Route")}</th>
+            <th className="px-5 py-3 font-medium">{t("Load")}</th>
+            <th className="px-5 py-3 font-medium">{t("Stage")}</th>
+            <th className="px-5 py-3 font-medium">{t("Sensors")}</th>
+            <th className="px-5 py-3 font-medium">{t("Progress")}</th>
+            <th className="px-5 py-3 font-medium">{t("Status")}</th>
           </tr>
         </thead>
         <motion.tbody
@@ -46,19 +49,18 @@ export function ShipmentTable({ shipments }: { shipments: Shipment[] }) {
                 </p>
               </td>
               <td className="px-5 py-4 align-top">
-                <p className="text-xs text-husk">{shipment.source}</p>
-                <p className="text-[11px] text-moss">to {shipment.destination}</p>
+                <p className="text-xs text-husk">{formatRoute(shipment.source, shipment.destination, language)}</p>
               </td>
               <td className="px-5 py-4 align-top">
-                <p className="text-xs text-husk">{shipment.produce_type}</p>
+                <p className="text-xs text-husk">{t(shipment.produce_type)}</p>
                 <p className="text-[11px] text-moss">
                   {formatQuantity(shipment.quantity, shipment.quantity_unit)}
                 </p>
               </td>
               <td className="px-5 py-4 align-top">
-                <p className="text-xs text-husk">{titleCase(shipment.stage)}</p>
+                <p className="text-xs text-husk">{t(titleCase(shipment.stage))}</p>
                 <p className="text-[11px] text-moss">
-                  {titleCase(shipment.collection_status)}
+                  {t(titleCase(shipment.collection_status))}
                 </p>
               </td>
               <td className="px-5 py-4 align-top">
