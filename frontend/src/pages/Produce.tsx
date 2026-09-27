@@ -11,13 +11,15 @@ import { StatusBadge } from "../components/StatusBadge";
 import { useAuth } from "../hooks/useAuth";
 import { useFetch } from "../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { shipmentsApi, vehiclesApi, warehousesApi } from "../services/api";
 import type { Shipment } from "../types";
-import { formatQuantity, formatRupees, timeAgo } from "../utils/format";
+import { formatQuantity, formatRoute, formatRupees, timeAgo } from "../utils/format";
 
 /** Farmer view of their own produce, grouped by crop. */
 export function Produce() {
   const { session } = useAuth();
+  const { language, t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [formOpen, setFormOpen] = useState(false);
 
@@ -55,7 +57,7 @@ export function Produce() {
   return (
     <div className="space-y-5">
       <div className="flex justify-end">
-        <Button onClick={() => setFormOpen(true)}>Add produce request</Button>
+        <Button onClick={() => setFormOpen(true)}>{t("Add produce request")}</Button>
       </div>
 
       {Object.keys(grouped).length === 0 ? (
@@ -65,7 +67,7 @@ export function Produce() {
             hint="Raise your first request and follow it from collection to the retailer."
             action={
               <Button onClick={() => setFormOpen(true)}>
-                Add produce request
+                {t("Add produce request")}
               </Button>
             }
           />
@@ -78,10 +80,10 @@ export function Produce() {
             <Panel
               key={produce}
               title={produce}
-              description={`${rows.length} requests · ${formatQuantity(
+              description={`${rows.length} ${t("requests")} · ${formatQuantity(
                 quantity,
                 rows[0].quantity_unit,
-              )} · ${formatRupees(value)} estimated`}
+              )} · ${formatRupees(value)} ${t("estimated")}`}
               bodyClassName="p-0"
             >
               <ul className="divide-y divide-husk/8">
@@ -100,10 +102,10 @@ export function Produce() {
                             shipment.quantity,
                             shipment.quantity_unit,
                           )}{" "}
-                          · {shipment.source} to {shipment.destination}
+                          · {formatRoute(shipment.source, shipment.destination, language)}
                         </p>
                         <p className="mt-0.5 text-[11px] text-moss">
-                          Raised {timeAgo(shipment.created_at)}
+                          {t("Raised")} {timeAgo(shipment.created_at)}
                         </p>
                       </div>
                       <StatusBadge

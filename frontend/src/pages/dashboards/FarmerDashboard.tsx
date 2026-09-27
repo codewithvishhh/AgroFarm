@@ -15,12 +15,14 @@ import { StatusBadge } from "../../components/StatusBadge";
 import { useAuth } from "../../hooks/useAuth";
 import { useFetch } from "../../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../../hooks/useLive";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { shipmentsApi, vehiclesApi, warehousesApi } from "../../services/api";
 import type { Shipment } from "../../types";
 import { formatQuantity, formatRupees, timeAgo } from "../../utils/format";
 
 export function FarmerDashboard() {
   const { session } = useAuth();
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [formOpen, setFormOpen] = useState(false);
 
@@ -83,30 +85,30 @@ export function FarmerDashboard() {
           hint={`${formatQuantity(
             todaysProduce.reduce((sum, item) => sum + item.quantity, 0),
             "kg",
-          )} raised today`}
+          )} ${t("raised today")}`}
           tone="crop"
         />
         <StatCard
           label="Total quantity supplied"
           value={formatQuantity(totalQuantity, "")}
-          hint={`${scope.length} requests raised`}
+          hint={`${scope.length} ${t("requests raised")}`}
           tone="chill"
         />
         <StatCard
           label="Active shipments"
           value={active.length}
-          hint={`${pendingCollection.length} waiting for pickup`}
+          hint={`${pendingCollection.length} ${t("waiting for pickup")}`}
           tone="harvest"
         />
         <StatCard
           label="Estimated value delivered"
           value={formatRupees(value)}
-          hint={`${delivered.length} deliveries completed`}
+          hint={`${delivered.length} ${t("deliveries completed")}`}
         />
       </motion.div>
 
       <div className="flex justify-end">
-        <Button onClick={() => setFormOpen(true)}>Create produce request</Button>
+        <Button onClick={() => setFormOpen(true)}>{t("Create produce request")}</Button>
       </div>
 
       <Panel
@@ -118,7 +120,7 @@ export function FarmerDashboard() {
             to="/shipments"
             className="px-5 text-[11px] text-moss transition-colors hover:text-crop"
           >
-            See all
+            {t("See all")}
           </Link>
         }
       >
@@ -145,14 +147,12 @@ export function FarmerDashboard() {
                       {shipment.shipment_id}
                     </Link>
                     <p className="mt-1 text-xs text-husk">
-                      {shipment.produce_type} ·{" "}
+                      {t(shipment.produce_type)} ·{" "}
                       {formatQuantity(shipment.quantity, shipment.quantity_unit)}{" "}
-                      · to {shipment.destination}
+                       · {t("Destination:")} {shipment.destination}
                     </p>
                     <p className="mt-0.5 text-[11px] text-moss">
-                      Vehicle{" "}
-                      {shipment.vehicle?.vehicle_number ?? "not assigned yet"} ·
-                      raised {timeAgo(shipment.created_at)}
+                       {t("Vehicle")}: {shipment.vehicle?.vehicle_number ?? t("Not assigned")} · {t("raised")} {timeAgo(shipment.created_at)}
                     </p>
                   </div>
                   <StatusBadge
@@ -169,7 +169,7 @@ export function FarmerDashboard() {
                   <div className="mt-3">
                     <ProgressTrack
                       value={shipment.progress_percentage}
-                      label={`${shipment.progress_percentage.toFixed(0)}% of the route covered`}
+                      label={`${shipment.progress_percentage.toFixed(0)}% ${t("of the route covered")}`}
                     />
                   </div>
                 )}
