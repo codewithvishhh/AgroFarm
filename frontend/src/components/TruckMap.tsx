@@ -12,7 +12,8 @@ import {
 } from "react-leaflet";
 
 import type { Shipment } from "../types";
-import { formatEta, formatQuantity } from "../utils/format";
+import { useLanguage } from "../i18n/LanguageContext";
+import { formatEta, formatQuantity, titleCase } from "../utils/format";
 
 const STATUS_COLOR: Record<string, string> = {
   PENDING: "#8CA79A",
@@ -76,6 +77,7 @@ export function TruckMap({
   showRoutes = true,
   onSelect,
 }: TruckMapProps) {
+  const { t } = useLanguage();
   const bounds = useMemo<[number, number][]>(() => {
     const points: [number, number][] = [];
     shipments.forEach((shipment) => {
@@ -149,7 +151,7 @@ export function TruckMap({
                   weight: 2,
                 }}
               >
-                <Popup>Pickup: {shipment.source}</Popup>
+                <Popup>{t("Pickup:")} {shipment.source}</Popup>
               </CircleMarker>
 
               <CircleMarker
@@ -162,7 +164,7 @@ export function TruckMap({
                   weight: 2,
                 }}
               >
-                <Popup>Drop: {shipment.destination}</Popup>
+                <Popup>{t("Drop:")} {shipment.destination}</Popup>
               </CircleMarker>
 
               <Marker
@@ -176,19 +178,19 @@ export function TruckMap({
                       {shipment.vehicle?.vehicle_number ?? shipment.shipment_id}
                     </strong>
                     <br />
-                    Driver: {shipment.vehicle?.driver_name ?? "Not assigned"}
+                    {t("Driver:")} {shipment.vehicle?.driver_name ?? t("Not assigned")}
                     <br />
-                    Shipment: {shipment.shipment_id}
+                    {t("Shipment:")} {shipment.shipment_id}
                     <br />
-                    Produce: {shipment.produce_type} (
+                    {t("Produce:")} {t(shipment.produce_type)} (
                     {formatQuantity(shipment.quantity, shipment.quantity_unit)})
                     <br />
-                    To: {shipment.destination}
+                    {t("To:")} {shipment.destination}
                     <br />
-                    Speed: {shipment.speed_kmph.toFixed(0)} km/h · ETA{" "}
+                    {t("Speed:")} {shipment.speed_kmph.toFixed(0)} km/h · ETA{" "}
                     {formatEta(shipment.eta_minutes)}
                     <br />
-                    Status: {shipment.status.replace("_", " ")} ·{" "}
+                    {t("Status:")} {t(titleCase(shipment.status))} ·{" "}
                     {shipment.progress_percentage.toFixed(0)}%
                     {shipment.temperature !== null && (
                       <>
