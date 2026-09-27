@@ -34,8 +34,8 @@ export default {
         beige: "#E8E2D4",
       },
       fontFamily: {
-        display: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
-        body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Sora", "Noto Sans Devanagari", "ui-sans-serif", "system-ui", "sans-serif"],
+        body: ["Inter", "Noto Sans Devanagari", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       boxShadow: {
