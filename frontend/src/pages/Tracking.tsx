@@ -9,11 +9,13 @@ import { StatusBadge } from "../components/StatusBadge";
 import { TruckMap } from "../components/TruckMap";
 import { useFetch } from "../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { shipmentsApi } from "../services/api";
 import type { Shipment } from "../types";
 import { formatEta } from "../utils/format";
 
 export function Tracking() {
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -68,7 +70,7 @@ export function Tracking() {
               onClick={() => setSelected(null)}
               className="text-[11px] text-moss hover:text-crop"
             >
-              Show all
+              {t("Show all")}
             </button>
           )
         }
@@ -96,8 +98,8 @@ export function Tracking() {
                 />
               </div>
               <p className="mt-1 text-[11px] text-moss">
-                {shipment.vehicle?.vehicle_number ?? "No vehicle"} ·{" "}
-                {shipment.produce_type} · to {shipment.destination}
+                {shipment.vehicle?.vehicle_number ?? t("No vehicle")} ·{" "}
+                {t(shipment.produce_type)} · {t("Destination:")} {shipment.destination}
               </p>
               <div className="mt-3">
                 <ProgressTrack
@@ -113,7 +115,7 @@ export function Tracking() {
           ))}
           {moving.length === 0 && (
             <li className="px-5 py-8 text-center text-xs text-moss">
-              No active vehicles.
+              {t("No active vehicles.")}
             </li>
           )}
         </ul>

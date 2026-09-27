@@ -13,12 +13,14 @@ import { TelemetryChart } from "../components/TelemetryChart";
 import { TruckMap } from "../components/TruckMap";
 import { useFetch } from "../hooks/useFetch";
 import { useLive, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { shipmentsApi, vehiclesApi } from "../services/api";
 import type { Shipment, Telemetry } from "../types";
 import {
   formatDateTime,
   formatEta,
   formatQuantity,
+  formatRoute,
   formatRupees,
   titleCase,
 } from "../utils/format";
@@ -26,6 +28,7 @@ import {
 export function ShipmentDetail() {
   const { shipmentId = "" } = useParams();
   const { pushToast } = useLive();
+  const { language, t } = useLanguage();
   const [shipment, setShipment] = useState<Shipment | null>(null);
   const [readings, setReadings] = useState<Telemetry[]>([]);
   const [vehicleId, setVehicleId] = useState("");
@@ -81,10 +84,10 @@ export function ShipmentDetail() {
     setBusy(true);
     try {
       setShipment(await action());
-      pushToast({ title: label, message: `${shipmentId} updated.`, tone: "good" });
+      pushToast({ title: t(label), message: `${shipmentId} ${t("updated.")}`, tone: "good" });
     } catch (exception) {
       pushToast({
-        title: "Action failed",
+        title: t("Action failed"),
         message: (exception as Error).message,
         tone: "danger",
       });
@@ -100,10 +103,10 @@ export function ShipmentDetail() {
       <Panel bodyClassName="p-0">
         <EmptyState
           title="Shipment not found"
-          hint={state.error ?? "It may have been removed."}
+              hint={t(state.error ?? "It may have been removed.")}
           action={
             <Link to="/shipments">
-              <Button variant="ghost">Back to shipments</Button>
+              <Button variant="ghost">{t("Back to shipments")}</Button>
             </Link>
           }
         />
@@ -119,7 +122,7 @@ export function ShipmentDetail() {
           className="inline-flex items-center gap-2 text-[11px] text-moss transition-colors hover:text-crop"
         >
           <ArrowLeft size={13} />
-          All shipments
+          {t("All shipments")}
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -130,7 +133,7 @@ export function ShipmentDetail() {
                 onChange={(event) => setVehicleId(event.target.value)}
                 className="rounded-lg border border-husk/12 bg-soil-800/55 backdrop-blur px-2.5 py-2 text-[11px] text-husk outline-none focus:border-crop/60"
               >
-                <option value="">Assign a vehicle</option>
+                <option value="">{t("Assign a vehicle")}</option>
                 {(vehicles.data ?? [])
                   .filter((vehicle) => vehicle.status === "AVAILABLE")
                   .map((vehicle) => (
@@ -147,7 +150,7 @@ export function ShipmentDetail() {
                   )
                 }
               >
-                Assign vehicle
+                {t("Assign vehicle")}
               </Button>
             </>
           )}
@@ -161,7 +164,7 @@ export function ShipmentDetail() {
                 )
               }
             >
-              Dispatch
+              {t("Dispatch")}
             </Button>
           )}
 
@@ -175,7 +178,7 @@ export function ShipmentDetail() {
                 )
               }
             >
-              Mark delivered
+              {t("Mark delivered")}
             </Button>
           )}
 
@@ -189,7 +192,7 @@ export function ShipmentDetail() {
                 )
               }
             >
-              Cancel
+              {t("Cancel")}
             </Button>
           )}
         </div>
@@ -200,12 +203,12 @@ export function ShipmentDetail() {
           <div>
             <p className="font-mono text-xs text-crop">{shipment.shipment_id}</p>
             <h2 className="mt-1 font-display text-xl text-husk">
-              {shipment.produce_type} ·{" "}
+              {t(shipment.produce_type)} ·{" "}
               {formatQuantity(shipment.quantity, shipment.quantity_unit)}
             </h2>
             <p className="mt-1 text-xs text-moss">
-              {shipment.source} to {shipment.destination} ·{" "}
-              {formatRupees(shipment.estimated_value)} estimated value
+              {formatRoute(shipment.source, shipment.destination, language)} ·{" "}
+              {formatRupees(shipment.estimated_value)} {t("estimated value")}
             </p>
           </div>
           <StatusBadge
@@ -221,7 +224,7 @@ export function ShipmentDetail() {
         <div className="mt-5">
           <ProgressTrack
             value={shipment.progress_percentage}
-            label={`${shipment.progress_percentage.toFixed(0)}% covered · ${shipment.speed_kmph.toFixed(
+            label={`${shipment.progress_percentage.toFixed(0)}% ${t("covered")} · ${shipment.speed_kmph.toFixed(
               0,
             )} km/h · ETA ${formatEta(shipment.eta_minutes)}`}
           />
@@ -229,47 +232,47 @@ export function ShipmentDetail() {
 
         <dl className="mt-6 grid grid-cols-2 gap-4 text-xs sm:grid-cols-4">
           <div>
-            <dt className="text-moss">Farmer</dt>
+            <dt className="text-moss">{t("Farmer")}</dt>
             <dd className="mt-1 text-husk">{shipment.farmer_name ?? "—"}</dd>
           </div>
           <div>
-            <dt className="text-moss">Vehicle</dt>
+            <dt className="text-moss">{t("Vehicle")}</dt>
             <dd className="mt-1 text-husk">
-              {shipment.vehicle?.vehicle_number ?? "Not assigned"}
+              {shipment.vehicle?.vehicle_number ?? t("Not assigned")}
             </dd>
           </div>
           <div>
-            <dt className="text-moss">Driver</dt>
+            <dt className="text-moss">{t("Driver")}</dt>
             <dd className="mt-1 text-husk">
               {shipment.vehicle?.driver_name ?? "—"}
             </dd>
           </div>
           <div>
-            <dt className="text-moss">Collection stage</dt>
+            <dt className="text-moss">{t("Collection stage")}</dt>
             <dd className="mt-1 text-husk">
-              {titleCase(shipment.collection_status)}
+              {t(titleCase(shipment.collection_status))}
             </dd>
           </div>
           <div>
-            <dt className="text-moss">Temperature</dt>
+            <dt className="text-moss">{t("Temperature")}</dt>
             <dd className="mt-1 tabular-nums text-husk">
               {shipment.temperature?.toFixed(1) ?? "—"}°C
             </dd>
           </div>
           <div>
-            <dt className="text-moss">Humidity</dt>
+            <dt className="text-moss">{t("Humidity")}</dt>
             <dd className="mt-1 tabular-nums text-husk">
               {shipment.humidity?.toFixed(0) ?? "—"}%
             </dd>
           </div>
           <div>
-            <dt className="text-moss">Departed</dt>
+            <dt className="text-moss">{t("Departed")}</dt>
             <dd className="mt-1 text-husk">
               {formatDateTime(shipment.departure_time)}
             </dd>
           </div>
           <div>
-            <dt className="text-moss">Deadline</dt>
+            <dt className="text-moss">{t("Deadline")}</dt>
             <dd className="mt-1 text-husk">
               {formatDateTime(shipment.delivery_deadline)}
             </dd>
@@ -279,10 +282,7 @@ export function ShipmentDetail() {
         {risk.data && (
           <p className="mt-5 flex items-start gap-2 rounded-lg border border-soil-600 bg-husk/4 px-3 py-2 text-[11px] text-moss">
             <Thermometer size={13} className="mt-0.5 shrink-0 text-chill" />
-            Spoilage risk {risk.data.risk.toLowerCase()} (score{" "}
-            {risk.data.score}). Safe band for {shipment.produce_type} is{" "}
-            {risk.data.band[0]}°C to {risk.data.band[1]}°C. Rule based for now; a
-            shelf-life model can replace it later.
+            {t("Spoilage risk")} {t(titleCase(risk.data.risk))} (score {risk.data.score}). {t("Safe band for")} {t(shipment.produce_type)} {risk.data.band[0]}°C {t("to")} {risk.data.band[1]}°C. {t("Rule based for now; a shelf-life model can replace it later.")}
           </p>
         )}
 
@@ -307,8 +307,8 @@ export function ShipmentDetail() {
                 <div>
                   <p className="text-xs font-semibold text-husk">
                     {redistribution.data.should_redistribute
-                      ? "Redistribution recommended"
-                      : "Delivery is within the freshness buffer"}
+                      ? t("Redistribution recommended")
+                      : t("Delivery is within the freshness buffer")}
                   </p>
                   <p className="mt-1 text-[11px] leading-relaxed text-moss">
                     {redistribution.data.reasons.join(". ")}.
@@ -316,7 +316,7 @@ export function ShipmentDetail() {
                 </div>
               </div>
               <span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-moss">
-                {redistribution.data.risk} risk
+                {t(titleCase(redistribution.data.risk))} {t("risk")}
               </span>
             </div>
 
@@ -332,10 +332,10 @@ export function ShipmentDetail() {
                       {candidate.name}
                     </p>
                     <p className="mt-1 text-[10px] text-moss">
-                      {candidate.distance_km} km · reroute {candidate.suggested_quantity.toLocaleString()} {shipment.quantity_unit}
+                      {candidate.distance_km} km · {t("reroute")} {candidate.suggested_quantity.toLocaleString()} {shipment.quantity_unit}
                     </p>
                     <p className="mt-1 text-[10px] text-moss">
-                      Demand {candidate.estimated_daily_demand.toLocaleString()} {shipment.quantity_unit}/day
+                      {t("Demand")} {candidate.estimated_daily_demand.toLocaleString()} {shipment.quantity_unit}/day
                     </p>
                   </div>
                 ))}
@@ -344,7 +344,7 @@ export function ShipmentDetail() {
             <p className="mt-2 text-[10px] text-moss/70">
               {redistribution.data.ml_prediction
                 ? `${redistribution.data.ml_prediction.model} predicts ${redistribution.data.ml_prediction.predicted_delay_minutes.toFixed(0)} minutes of delay from ${redistribution.data.ml_prediction.training_examples} completed shipments.`
-                : "Baseline prediction using ETA, freshness window, cold-chain readings, distance, and recent demand. More completed shipments are needed to train the ML model."}
+                : t("Baseline prediction using ETA, freshness window, cold-chain readings, distance, and recent demand. More completed shipments are needed to train the ML model.")}
             </p>
           </div>
         )}

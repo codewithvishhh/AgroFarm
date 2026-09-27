@@ -19,6 +19,7 @@ import { StatusBadge } from "../components/StatusBadge";
 import { TruckMap } from "../components/TruckMap";
 import { useFetch } from "../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { alertsApi, dashboardApi, shipmentsApi } from "../services/api";
 import type { Shipment } from "../types";
 import { formatQuantity, timeAgo, titleCase } from "../utils/format";
@@ -43,6 +44,7 @@ const STATUS_COLOR: Record<string, string> = {
 
 /** Supply chain control dashboard: one screen across the whole network. */
 export function ControlTower() {
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
   const stats = useFetch(() => dashboardApi.stats(), [], "stats");
@@ -115,7 +117,7 @@ export function ControlTower() {
             to="/tracking"
             className="text-[11px] text-moss transition-colors hover:text-crop"
           >
-            Open live map
+            {t("Open live map")}
           </Link>
         }
       >
@@ -141,7 +143,7 @@ export function ControlTower() {
                   dataKey="label"
                   tick={axisStyle}
                   stroke="#274236"
-                  tickFormatter={titleCase}
+                  tickFormatter={(value) => t(titleCase(String(value)))}
                 />
                 <YAxis tick={axisStyle} stroke="#274236" width={40} />
                 <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "#16241E" }} />
@@ -226,7 +228,7 @@ export function ControlTower() {
                   <div className="flex items-center gap-2">
                     <StatusBadge status={alert.severity} />
                     <span className="text-[11px] text-moss">
-                      {titleCase(alert.alert_type)}
+                      {t(titleCase(alert.alert_type))}
                     </span>
                   </div>
                   <p className="mt-2 text-xs text-husk">{alert.message}</p>

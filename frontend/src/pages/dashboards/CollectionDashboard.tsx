@@ -11,11 +11,13 @@ import { StatusBadge } from "../../components/StatusBadge";
 import { TruckMap } from "../../components/TruckMap";
 import { useFetch } from "../../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../../hooks/useLive";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { shipmentsApi, vehiclesApi, warehousesApi } from "../../services/api";
 import type { Shipment } from "../../types";
 import { formatQuantity, timeAgo, titleCase } from "../../utils/format";
 
 export function CollectionDashboard() {
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
   const state = useFetch(
@@ -74,7 +76,7 @@ export function CollectionDashboard() {
         <StatCard
           label="Pending requests"
           value={pending.length}
-          hint={`${inProgress.length} accepted and in progress`}
+          hint={`${inProgress.length} ${t("accepted and in progress")}`}
           tone="harvest"
         />
         <StatCard
@@ -129,12 +131,12 @@ export function CollectionDashboard() {
                     {shipment.shipment_id}
                   </Link>
                   <p className="mt-1 text-xs text-husk">
-                    {shipment.farmer_name ?? "Farmer"} ·{" "}
-                    {shipment.produce_type} ·{" "}
+                    {shipment.farmer_name ?? t("Farmer")} ·{" "}
+                    {t(shipment.produce_type)} ·{" "}
                     {formatQuantity(shipment.quantity, shipment.quantity_unit)}
                   </p>
                   <p className="mt-0.5 text-[11px] text-moss">
-                    Pickup at {shipment.source} · raised{" "}
+                    {t("Pickup at")} {shipment.source} · {t("raised")} {" "}
                     {timeAgo(shipment.created_at)}
                   </p>
                 </div>
@@ -196,8 +198,8 @@ export function CollectionDashboard() {
               className="flex items-center justify-between gap-3 px-5 py-3"
             >
               <p className="truncate text-[11px] text-husk/85">
-                {shipment.shipment_id} · {shipment.produce_type} ·{" "}
-                {titleCase(shipment.collection_status)}
+                {shipment.shipment_id} · {t(shipment.produce_type)} ·{" "}
+                  {t(titleCase(shipment.collection_status))}
               </p>
               <span className="shrink-0 text-[10px] text-moss">
                 {timeAgo(shipment.updated_at)}

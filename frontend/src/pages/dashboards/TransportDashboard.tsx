@@ -14,11 +14,13 @@ import { StatusBadge } from "../../components/StatusBadge";
 import { TruckMap } from "../../components/TruckMap";
 import { useFetch } from "../../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../../hooks/useLive";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { emergenciesApi, shipmentsApi, vehiclesApi } from "../../services/api";
 import type { Emergency, Shipment } from "../../types";
 import { formatEta, timeAgo, titleCase } from "../../utils/format";
 
 export function TransportDashboard() {
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [emergencies, setEmergencies] = useState<Emergency[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -106,10 +108,10 @@ export function TransportDashboard() {
 
       <div className="flex flex-wrap justify-end gap-2">
         <Link to="/fleet">
-          <Button variant="ghost">Open fleet table</Button>
+          <Button variant="ghost">{t("Open fleet table")}</Button>
         </Link>
         <Button variant="danger" onClick={() => setDialogOpen(true)}>
-          Report emergency
+          {t("Report emergency")}
         </Button>
       </div>
 
@@ -123,7 +125,7 @@ export function TransportDashboard() {
               to="/emergencies"
               className="px-5 text-[11px] text-moss transition-colors hover:text-rot"
             >
-              Manage
+              {t("Manage")}
             </Link>
           }
         >
@@ -135,11 +137,11 @@ export function TransportDashboard() {
               >
                 <div className="min-w-0">
                   <p className="text-xs text-husk">
-                    {titleCase(emergency.emergency_type)} ·{" "}
+                    {t(titleCase(emergency.emergency_type))} ·{" "}
                     {emergency.vehicle_id}
                   </p>
                   <p className="mt-0.5 text-[11px] text-moss">
-                    Nearest help: {emergency.nearest_warehouse ?? "searching"}
+                    {t("Nearest help:")} {emergency.nearest_warehouse ?? t("searching")}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -163,7 +165,7 @@ export function TransportDashboard() {
             to="/tracking"
             className="text-[11px] text-moss transition-colors hover:text-crop"
           >
-            Open live map
+            {t("Open live map")}
           </Link>
         }
       >
@@ -186,11 +188,11 @@ export function TransportDashboard() {
           <table className="w-full min-w-[46rem] text-left text-sm">
             <thead>
               <tr className="text-[11px] text-moss">
-                <th className="px-5 py-3 font-medium">Vehicle</th>
-                <th className="px-5 py-3 font-medium">Driver</th>
-                <th className="px-5 py-3 font-medium">Status</th>
-                <th className="px-5 py-3 font-medium">Shipment</th>
-                <th className="px-5 py-3 font-medium">Progress</th>
+                <th className="px-5 py-3 font-medium">{t("Vehicle")}</th>
+                <th className="px-5 py-3 font-medium">{t("Driver")}</th>
+                <th className="px-5 py-3 font-medium">{t("Status")}</th>
+                <th className="px-5 py-3 font-medium">{t("Shipment")}</th>
+                <th className="px-5 py-3 font-medium">{t("Progress")}</th>
                 <th className="px-5 py-3 font-medium">ETA</th>
               </tr>
             </thead>
@@ -218,7 +220,7 @@ export function TransportDashboard() {
                         {row.shipment_id}
                       </Link>
                     ) : (
-                      <span className="text-moss">Idle</span>
+                      <span className="text-moss">{t("Idle")}</span>
                     )}
                   </td>
                   <td className="w-40 px-5 py-3">

@@ -21,6 +21,7 @@ import { StatCard } from "../../components/StatCard";
 import { StatusBadge } from "../../components/StatusBadge";
 import { useFetch } from "../../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../../hooks/useLive";
+import { useLanguage } from "../../i18n/LanguageContext";
 import {
   dashboardApi,
   inventoryApi,
@@ -28,7 +29,7 @@ import {
   warehousesApi,
 } from "../../services/api";
 import type { Shipment } from "../../types";
-import { formatQuantity, timeAgo } from "../../utils/format";
+import { formatQuantity, timeAgo, titleCase } from "../../utils/format";
 
 const axisStyle = { fill: "#8CA79A", fontSize: 11 };
 const tooltipStyle = {
@@ -40,6 +41,7 @@ const tooltipStyle = {
 };
 
 export function WarehouseDashboard() {
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
   const stats = useFetch(() => dashboardApi.stats(), [], "stats");
@@ -111,19 +113,19 @@ export function WarehouseDashboard() {
         <StatCard
           label="Stock on hand"
           value={formatQuantity(totalStock, "")}
-          hint={`${produceTypes.size} produce types stored`}
+          hint={`${produceTypes.size} ${t("produce types stored")}`}
           tone="crop"
         />
         <StatCard
           label="Network utilization"
           value={`${stats.data?.warehouse_utilization ?? 0}%`}
-          hint={`${stats.data?.total_warehouses ?? 0} warehouses`}
+          hint={`${stats.data?.total_warehouses ?? 0} ${t("warehouses")}`}
           tone="chill"
         />
         <StatCard
           label="Incoming shipments"
           value={incoming.length}
-          hint={`${outgoing.length} delivered so far`}
+          hint={`${outgoing.length} ${t("delivered so far")}`}
           tone="harvest"
         />
         <StatCard
@@ -185,6 +187,7 @@ export function WarehouseDashboard() {
                   tick={axisStyle}
                   stroke="#274236"
                   width={70}
+                  tickFormatter={(value) => t(String(value))}
                 />
                 <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "#16241E" }} />
                 <Bar dataKey="quantity" radius={[0, 6, 6, 0]}>
@@ -225,7 +228,7 @@ export function WarehouseDashboard() {
                         {shipment.shipment_id}
                       </Link>
                       <p className="mt-1 truncate text-xs text-husk">
-                        {shipment.produce_type} ·{" "}
+                        {t(shipment.produce_type)} ·{" "}
                         {formatQuantity(
                           shipment.quantity,
                           shipment.quantity_unit,
@@ -255,7 +258,7 @@ export function WarehouseDashboard() {
               to="/inventory-history"
               className="px-5 text-[11px] text-moss transition-colors hover:text-crop"
             >
-              Full history
+              {t("Full history")}
             </Link>
           }
         >
@@ -267,11 +270,11 @@ export function WarehouseDashboard() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-xs text-husk">
-                    {row.produce_type} ·{" "}
+                    {t(row.produce_type)} ·{" "}
                     {formatQuantity(row.quantity, row.unit)}
                   </p>
                   <p className="text-[11px] text-moss">
-                    {row.transaction_type.toLowerCase()} · balance{" "}
+                    {t(titleCase(row.transaction_type))} · {t("balance")} {" "}
                     {row.balance_after_transaction.toLocaleString(undefined, {
                       maximumFractionDigits: 0,
                     })}

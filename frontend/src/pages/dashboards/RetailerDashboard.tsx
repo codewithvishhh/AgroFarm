@@ -12,11 +12,13 @@ import { StatusBadge } from "../../components/StatusBadge";
 import { TruckMap } from "../../components/TruckMap";
 import { useFetch } from "../../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../../hooks/useLive";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { forecastApi, inventoryApi, shipmentsApi } from "../../services/api";
 import type { Shipment } from "../../types";
 import { formatEta, formatQuantity } from "../../utils/format";
 
 export function RetailerDashboard() {
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
   const state = useFetch(
@@ -106,18 +108,18 @@ export function RetailerDashboard() {
             <table className="w-full min-w-[40rem] text-left text-sm">
               <thead>
                 <tr className="text-[11px] text-moss">
-                  <th className="px-5 py-3 font-medium">Product</th>
-                  <th className="px-5 py-3 font-medium">Current stock</th>
-                  <th className="px-5 py-3 font-medium">Forecast demand</th>
-                  <th className="px-5 py-3 font-medium">Recommended order</th>
-                  <th className="px-5 py-3 font-medium">Position</th>
+                  <th className="px-5 py-3 font-medium">{t("Product")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Current stock")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Forecast demand")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Recommended order")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Position")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-husk/8">
                 {rows.map((row) => (
                   <tr key={row.produce_type} className="hover:bg-husk/4">
                     <td className="px-5 py-3 text-xs text-husk">
-                      {row.produce_type}
+                      {t(row.produce_type)}
                     </td>
                     <td className="px-5 py-3 text-xs tabular-nums text-moss">
                       {row.current_stock.toLocaleString()} {row.unit}
@@ -128,7 +130,7 @@ export function RetailerDashboard() {
                     <td className="px-5 py-3 text-xs tabular-nums text-husk">
                       {row.potential_shortage > 0
                         ? `${row.potential_shortage.toLocaleString()} ${row.unit}`
-                        : "No order needed"}
+                        : t("No order needed")}
                     </td>
                     <td className="px-5 py-3">
                       <StatusBadge
@@ -184,7 +186,7 @@ export function RetailerDashboard() {
                         {shipment.shipment_id}
                       </Link>
                       <p className="mt-1 truncate text-xs text-husk">
-                        {shipment.produce_type} ·{" "}
+                        {t(shipment.produce_type)} ·{" "}
                         {formatQuantity(
                           shipment.quantity,
                           shipment.quantity_unit,
@@ -206,7 +208,7 @@ export function RetailerDashboard() {
               ))}
             {incoming.length === 0 && (
               <li className="px-5 py-8 text-center text-xs text-moss">
-                No deliveries scheduled.
+                {t("No deliveries scheduled.")}
               </li>
             )}
           </ul>
