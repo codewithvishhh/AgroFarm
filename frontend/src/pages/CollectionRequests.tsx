@@ -8,6 +8,7 @@ import { Panel } from "../components/Panel";
 import { ShipmentTimeline } from "../components/ShipmentTimeline";
 import { StatusBadge } from "../components/StatusBadge";
 import { useFetch } from "../hooks/useFetch";
+import { useLanguage } from "../i18n/LanguageContext";
 import { mergeShipment, useLive, useLiveEvent } from "../hooks/useLive";
 import { shipmentsApi, vehiclesApi, warehousesApi } from "../services/api";
 import type { CollectionStatus, Shipment } from "../types";
@@ -27,6 +28,7 @@ const fieldClass =
 /** Collection desk: accept requests, assign pickup, record what was collected. */
 export function CollectionRequests() {
   const { pushToast } = useLive();
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<
@@ -88,13 +90,13 @@ export function CollectionRequests() {
       );
       setShipments((current) => mergeShipment(current, updated));
       pushToast({
-        title: "Collection updated",
-        message: `${shipment.shipment_id} is now ${titleCase(next)}.`,
+        title: t("Collection updated"),
+        message: `${shipment.shipment_id} · ${t(titleCase(next))}`,
         tone: "good",
       });
     } catch (exception) {
       pushToast({
-        title: "Update failed",
+        title: t("Update failed"),
         message: (exception as Error).message,
         tone: "danger",
       });
@@ -115,7 +117,7 @@ export function CollectionRequests() {
             key={stage}
             className="glass edge-light rounded-2xl px-4 py-3"
           >
-            <p className="text-[11px] text-moss">{titleCase(stage)}</p>
+            <p className="text-[11px] text-moss">{t(titleCase(stage))}</p>
             <p className="mt-1 font-display text-xl tabular-nums text-husk">
               {
                 shipments.filter((item) => item.collection_status === stage)
@@ -152,15 +154,15 @@ export function CollectionRequests() {
                         {shipment.shipment_id}
                       </Link>
                       <p className="mt-1 text-xs text-husk">
-                        {shipment.farmer_name ?? "Farmer"} ·{" "}
-                        {shipment.produce_type} ·{" "}
+                        {shipment.farmer_name ?? t("Farmer")} ·{" "}
+                        {t(shipment.produce_type)} ·{" "}
                         {formatQuantity(
                           shipment.quantity,
                           shipment.quantity_unit,
                         )}
                       </p>
                       <p className="mt-0.5 text-[11px] text-moss">
-                        Pickup at {shipment.source} · raised{" "}
+                        {t("Pickup at")} {shipment.source} · {t("raised")} {" "}
                         {timeAgo(shipment.created_at)}
                       </p>
                     </div>
@@ -177,7 +179,7 @@ export function CollectionRequests() {
                         disabled={busy === shipment.shipment_id}
                         onClick={() => advance(shipment, "ACCEPTED")}
                       >
-                        Accept collection
+                        {t("Accept collection")}
                       </Button>
                     )}
 
@@ -192,7 +194,7 @@ export function CollectionRequests() {
                           }
                           className={fieldClass}
                         >
-                          <option value="">Pick a collection vehicle</option>
+                          <option value="">{t("Pick a collection vehicle")}</option>
                           {(vehicles.data ?? [])
                             .filter((vehicle) => vehicle.status === "AVAILABLE")
                             .map((vehicle) => (
@@ -214,7 +216,7 @@ export function CollectionRequests() {
                             })
                           }
                         >
-                          Assign pickup
+                          {t("Assign pickup")}
                         </Button>
                       </>
                     )}
@@ -230,7 +232,7 @@ export function CollectionRequests() {
                           }
                           inputMode="decimal"
                           className={`${fieldClass} w-32`}
-                          placeholder="Collected quantity"
+                          placeholder={t("Collected quantity")}
                         />
                         <Button
                           disabled={busy === shipment.shipment_id}
@@ -240,7 +242,7 @@ export function CollectionRequests() {
                             })
                           }
                         >
-                          Record collected
+                          {t("Record collected")}
                         </Button>
                       </>
                     )}
@@ -256,14 +258,14 @@ export function CollectionRequests() {
                           }
                           className={fieldClass}
                         >
-                          <option value="">Send to which warehouse</option>
+                          <option value="">{t("Send to which warehouse")}</option>
                           {(warehouses.data ?? []).map((warehouse) => (
                             <option
                               key={warehouse.warehouse_id}
                               value={warehouse.warehouse_id}
                             >
                               {warehouse.name} ·{" "}
-                              {warehouse.current_utilization.toFixed(0)}% full
+                              {warehouse.current_utilization.toFixed(0)}% {t("full")}
                             </option>
                           ))}
                         </select>
@@ -277,13 +279,13 @@ export function CollectionRequests() {
                             })
                           }
                         >
-                          Send to warehouse
+                          {t("Send to warehouse")}
                         </Button>
                         <Link
                           to="/allocation"
                           className="text-[11px] text-moss hover:text-crop"
                         >
-                          Need a recommendation?
+                          {t("Need a recommendation?")}
                         </Link>
                       </>
                     )}
