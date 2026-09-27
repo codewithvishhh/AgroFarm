@@ -4,7 +4,9 @@ import { useLocation } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
 import { useLive } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { NAVIGATION, ROLE_LABEL } from "../utils/navigation";
+import { LanguageToggle } from "./LanguageToggle";
 import { NotificationPanel } from "./NotificationPanel";
 
 interface TopbarProps {
@@ -16,14 +18,15 @@ export function Topbar({ online, onMenu }: TopbarProps) {
   const { pathname } = useLocation();
   const { session } = useAuth();
   const { unreadCount, connected } = useLive();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   const link = session
     ? NAVIGATION[session.role].find((item) => item.to === pathname)
     : undefined;
   const title =
-    link?.label ??
-    (pathname.startsWith("/shipments/") ? "Shipment detail" : "AgroFarm");
+    t(link?.label ??
+    (pathname.startsWith("/shipments/") ? "Shipment detail" : "AgroFarm"));
 
   return (
     <header className="glass relative z-20 m-3 flex items-center justify-between gap-3 rounded-2xl px-4 py-3 sm:px-6 sm:py-4">
@@ -31,7 +34,7 @@ export function Topbar({ online, onMenu }: TopbarProps) {
         <button
           onClick={onMenu}
           className="glass rounded-xl p-2 text-moss transition-colors hover:text-crop lg:hidden"
-          aria-label="Open menu"
+            aria-label={t("Open menu")}
         >
           <Menu size={16} />
         </button>
@@ -41,7 +44,7 @@ export function Topbar({ online, onMenu }: TopbarProps) {
           </h1>
           <p className="truncate text-[11px] text-moss">
             {session
-              ? `${session.name} · ${ROLE_LABEL[session.role]}`
+              ? `${session.name} · ${t(ROLE_LABEL[session.role])}`
               : "AgroFarm"}
           </p>
         </div>
@@ -56,22 +59,24 @@ export function Topbar({ online, onMenu }: TopbarProps) {
           }`}
           title={
             online
-              ? "Connected to the AgroFarm API"
-              : "Offline. Cached dashboard data is shown."
+              ? t("Connected to the AgroFarm API")
+              : t("Offline. Cached dashboard data is shown.")
           }
         >
           {online ? <Wifi size={12} /> : <WifiOff size={12} />}
           {online
             ? connected
-              ? "Online"
+              ? t("Online")
               : "Online, feed reconnecting"
-            : "Offline — cached data"}
+            : t("Offline — cached data")}
         </span>
+
+        <LanguageToggle />
 
         <button
           onClick={() => setOpen((value) => !value)}
           className="glass relative rounded-xl p-2 text-husk transition-all duration-200 hover:-translate-y-0.5 hover:text-crop"
-          aria-label="Open notifications"
+          aria-label={t("Open notifications")}
         >
           <Bell size={16} />
           {unreadCount > 0 && (
