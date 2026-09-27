@@ -8,9 +8,10 @@ import { ProgressTrack } from "../components/ProgressTrack";
 import { StatCard } from "../components/StatCard";
 import { useFetch } from "../hooks/useFetch";
 import { useLive, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { inventoryApi, warehousesApi } from "../services/api";
 import type { TransactionType } from "../types";
-import { formatQuantity, timeAgo } from "../utils/format";
+import { formatQuantity, timeAgo, titleCase } from "../utils/format";
 
 const TYPES: TransactionType[] = [
   "RECEIVED",
@@ -26,6 +27,7 @@ const fieldClass =
 
 export function Inventory() {
   const { pushToast } = useLive();
+  const { t } = useLanguage();
   const [warehouseId, setWarehouseId] = useState("");
   const [produce, setProduce] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -56,8 +58,8 @@ export function Inventory() {
     const amount = Number(quantity);
     if (!warehouseId || !produce.trim() || !Number.isFinite(amount) || amount <= 0) {
       pushToast({
-        title: "Check the form",
-        message: "Pick a warehouse, a produce type, and a quantity above zero.",
+        title: t("Check the form"),
+        message: t("Pick a warehouse, a produce type, and a quantity above zero."),
         tone: "warn",
       });
       return;
@@ -74,13 +76,13 @@ export function Inventory() {
       setQuantity("");
       await Promise.all([items.reload(), lowStock.reload(), warehouses.reload()]);
       pushToast({
-        title: "Movement recorded",
-        message: "Stock and the track record are both updated.",
+        title: t("Movement recorded"),
+        message: t("Stock and the track record are both updated."),
         tone: "good",
       });
     } catch (exception) {
       pushToast({
-        title: "Could not record",
+        title: t("Could not record"),
         message: (exception as Error).message,
         tone: "danger",
       });
@@ -98,7 +100,7 @@ export function Inventory() {
           label="Stock on hand"
           value={formatQuantity(total, "")}
           tone="crop"
-          hint={`${rows.length} stock lines`}
+          hint={`${rows.length} ${t("stock lines")}`}
         />
         <StatCard
           label="Produce types"
@@ -113,7 +115,7 @@ export function Inventory() {
         <StatCard
           label="Warehouses"
           value={(warehouses.data ?? []).length}
-          hint="Across the network"
+          hint={t("Across the network")}
         />
       </div>
 
@@ -123,13 +125,13 @@ export function Inventory() {
       >
         <div className="flex flex-wrap items-end gap-2">
           <label className="text-[11px] text-moss">
-            Warehouse
+            {t("Warehouse")}
             <select
               value={warehouseId}
               onChange={(event) => setWarehouseId(event.target.value)}
               className={`mt-1 block ${fieldClass}`}
             >
-              <option value="">All warehouses</option>
+              <option value="">{t("All warehouses")}</option>
               {(warehouses.data ?? []).map((warehouse) => (
                 <option
                   key={warehouse.warehouse_id}
@@ -142,7 +144,7 @@ export function Inventory() {
           </label>
 
           <label className="text-[11px] text-moss">
-            Produce
+            {t("Produce")}
             <input
               value={produce}
               onChange={(event) => setProduce(event.target.value)}
@@ -152,7 +154,7 @@ export function Inventory() {
           </label>
 
           <label className="text-[11px] text-moss">
-            Quantity
+            {t("Quantity")}
             <input
               value={quantity}
               onChange={(event) => setQuantity(event.target.value)}
@@ -163,7 +165,7 @@ export function Inventory() {
           </label>
 
           <label className="text-[11px] text-moss">
-            Movement
+            {t("Movement")}
             <select
               value={type}
               onChange={(event) =>
@@ -173,14 +175,14 @@ export function Inventory() {
             >
               {TYPES.map((option) => (
                 <option key={option} value={option}>
-                  {option.toLowerCase()}
+                  {t(titleCase(option))}
                 </option>
               ))}
             </select>
           </label>
 
           <Button onClick={record} disabled={busy}>
-            {busy ? "Recording" : "Record movement"}
+            {busy ? t("Recording") : t("Record movement")}
           </Button>
         </div>
       </Panel>
@@ -200,11 +202,11 @@ export function Inventory() {
             <table className="w-full min-w-[44rem] text-left text-sm">
               <thead>
                 <tr className="text-[11px] text-moss">
-                  <th className="px-5 py-3 font-medium">Produce</th>
-                  <th className="px-5 py-3 font-medium">Warehouse</th>
-                  <th className="px-5 py-3 font-medium">Quantity</th>
-                  <th className="px-5 py-3 font-medium">Against reorder level</th>
-                  <th className="px-5 py-3 font-medium">Updated</th>
+                  <th className="px-5 py-3 font-medium">{t("Produce")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Warehouse")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Quantity")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Against reorder level")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Updated")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-husk/8">
@@ -219,7 +221,7 @@ export function Inventory() {
                   return (
                     <tr key={row.id} className="hover:bg-husk/4">
                       <td className="px-5 py-3 text-xs text-husk">
-                        {row.produce_type}
+                        {t(row.produce_type)}
                       </td>
                       <td className="px-5 py-3 text-[11px] text-moss">
                         {warehouse?.name ?? row.warehouse_id}
@@ -230,12 +232,12 @@ export function Inventory() {
                       <td className="w-56 px-5 py-3">
                         <ProgressTrack
                           value={ratio}
-                          label={`Reorder at ${row.reorder_level.toLocaleString(
+                          label={`${t("Reorder at")} ${row.reorder_level.toLocaleString(
                             undefined,
                             { maximumFractionDigits: 0 },
                           )} ${row.unit}${
                             row.quantity < row.reorder_level
-                              ? " · below level"
+                              ? ` · ${t("below level")}`
                               : ""
                           }`}
                         />
