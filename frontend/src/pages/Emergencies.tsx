@@ -10,12 +10,14 @@ import { StatCard } from "../components/StatCard";
 import { StatusBadge } from "../components/StatusBadge";
 import { useFetch } from "../hooks/useFetch";
 import { useLive, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { emergenciesApi, vehiclesApi } from "../services/api";
 import type { Emergency, NearbyFacility } from "../types";
 import { formatDateTime, timeAgo, titleCase } from "../utils/format";
 
 export function Emergencies() {
   const { pushToast } = useLive();
+  const { t } = useLanguage();
   const [emergencies, setEmergencies] = useState<Emergency[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [nearby, setNearby] = useState<NearbyFacility[]>([]);
@@ -78,13 +80,13 @@ export function Emergencies() {
         ),
       );
       pushToast({
-        title: "Assistance request sent",
-        message: `${facility.name} was contacted, about ${facility.eta_minutes} minutes away.`,
+        title: t("Assistance request sent"),
+        message: `${facility.name} · ${facility.eta_minutes} ${t("minutes away")}`,
         tone: "good",
       });
     } catch (exception) {
       pushToast({
-        title: "Could not contact",
+        title: t("Could not contact"),
         message: (exception as Error).message,
         tone: "danger",
       });
@@ -106,8 +108,8 @@ export function Emergencies() {
         ),
       );
       pushToast({
-        title: "Emergency resolved",
-        message: `${emergency.emergency_id} is closed and the vehicle is released.`,
+        title: t("Emergency resolved"),
+        message: `${emergency.emergency_id} · ${t("The vehicle has been released.")}`,
         tone: "good",
       });
     } finally {
@@ -146,7 +148,7 @@ export function Emergencies() {
       <div className="flex justify-end">
         <Button variant="danger" onClick={() => setDialogOpen(true)}>
           <AlertOctagon size={14} />
-          Report emergency
+          {t("Report emergency")}
         </Button>
       </div>
 
@@ -177,11 +179,11 @@ export function Emergencies() {
                         {emergency.emergency_id}
                       </p>
                       <p className="mt-1 text-xs text-husk">
-                        {titleCase(emergency.emergency_type)} ·{" "}
+                        {t(titleCase(emergency.emergency_type))} ·{" "}
                         {emergency.vehicle_id}
                       </p>
                       <p className="mt-0.5 text-[11px] text-moss">
-                        {emergency.description ?? "No description"}
+                        {emergency.description ?? t("No description")}
                       </p>
                       <p className="mt-1 text-[11px] text-moss">
                         GPS {emergency.latitude.toFixed(3)},{" "}
@@ -192,7 +194,7 @@ export function Emergencies() {
                     <div className="flex flex-col items-end gap-2">
                       <StatusBadge status={emergency.severity} />
                       <span className="text-[11px] text-moss">
-                        {titleCase(emergency.status)}
+                        {t(titleCase(emergency.status))}
                       </span>
                     </div>
                   </div>
@@ -207,7 +209,7 @@ export function Emergencies() {
                           void resolve(emergency);
                         }}
                       >
-                        Mark resolved
+                        {t("Mark resolved")}
                       </Button>
                     </div>
                   )}
@@ -221,8 +223,8 @@ export function Emergencies() {
           title="Nearby assistance"
           description={
             current
-              ? `Around ${current.vehicle_id}`
-              : "Select a case to see responders"
+              ? `${t("Around")} ${current.vehicle_id}`
+              : t("Select a case to see responders")
           }
           bodyClassName="p-0"
         >
@@ -237,10 +239,10 @@ export function Emergencies() {
                 <li key={`${facility.kind}-${facility.reference_id}`} className="px-5 py-4">
                   <p className="text-xs text-husk">{facility.name}</p>
                   <p className="mt-0.5 text-[11px] text-moss">
-                    {titleCase(facility.kind)} · {facility.location}
+                    {t(titleCase(facility.kind))} · {facility.location}
                   </p>
                   <p className="mt-1 text-[11px] tabular-nums text-moss">
-                    Distance {facility.distance_km} km · ETA{" "}
+                    {t("Distance")} {facility.distance_km} km · ETA{" "}
                     {facility.eta_minutes} min
                   </p>
                   <div className="mt-2 flex items-center gap-2">
@@ -250,22 +252,22 @@ export function Emergencies() {
                       onClick={() => contact(facility)}
                     >
                       <PhoneCall size={12} />
-                      Contact
+                      {t("Contact")}
                     </Button>
                     <span className="text-[11px] text-moss">
-                      {facility.contact_phone ?? "No number on file"}
+                      {facility.contact_phone ?? t("No number on file")}
                     </span>
                   </div>
                 </li>
               ))}
               {nearby.length === 0 && (
                 <li className="px-5 py-8 text-center text-xs text-moss">
-                  No facilities found near this location.
+                  {t("No facilities found near this location.")}
                 </li>
               )}
               {current.responder && (
                 <li className="px-5 py-4 text-[11px] text-crop">
-                  Assistance requested from {current.responder}
+                  {t("Assistance requested from")} {current.responder}
                   {current.resolved_at
                     ? ` · resolved ${formatDateTime(current.resolved_at)}`
                     : ""}
