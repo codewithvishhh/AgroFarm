@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 
 import { listItem } from "../animations/variants";
 import { useCountUp } from "../hooks/useCountUp";
+import { useLanguage } from "../i18n/LanguageContext";
 import { TiltCard } from "./TiltCard";
 
 interface StatCardProps {
@@ -43,16 +44,24 @@ function AnimatedValue({ value }: { value: string | number }) {
   return (
     <>
       {match[1]}
-      {animated.toLocaleString(undefined, {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      })}
+      {animated.toLocaleString(
+        typeof window !== "undefined" &&
+          window.localStorage.getItem("agrofarm-language") === "hi"
+          ? "hi-IN"
+          : "en-IN",
+        {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        },
+      )}
       {match[3]}
     </>
   );
 }
 
 export function StatCard({ label, value, hint, tone = "neutral" }: StatCardProps) {
+  const { t } = useLanguage();
+
   return (
     <motion.div variants={listItem}>
       <TiltCard intensity={7} className="h-full">
@@ -65,11 +74,11 @@ export function StatCard({ label, value, hint, tone = "neutral" }: StatCardProps
             className={`pointer-events-none absolute -right-10 -top-14 h-32 w-32 rounded-full bg-gradient-to-br ${GLOWS[tone]} to-transparent blur-2xl`}
             aria-hidden
           />
-          <p className="relative text-xs text-moss">{label}</p>
+          <p className="relative text-xs text-moss">{t(label)}</p>
           <p className="relative mt-2 font-display text-3xl font-semibold tabular-nums text-husk">
             <AnimatedValue value={value} />
           </p>
-          {hint && <p className="relative mt-1 text-xs text-moss/80">{hint}</p>}
+          {hint && <p className="relative mt-1 text-xs text-moss/80">{t(hint)}</p>}
         </article>
       </TiltCard>
     </motion.div>

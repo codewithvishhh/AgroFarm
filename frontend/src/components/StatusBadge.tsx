@@ -1,4 +1,5 @@
 import type { AlertSeverity, ShipmentStatus, VehicleStatus } from "../types";
+import { useLanguage } from "../i18n/LanguageContext";
 import { titleCase } from "../utils/format";
 
 const TONES: Record<string, string> = {
@@ -21,6 +22,7 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, pulse }: StatusBadgeProps) {
+  const { t } = useLanguage();
   const tone = TONES[status] ?? "bg-soil-600 text-moss border-soil-500";
   return (
     <span
@@ -32,7 +34,7 @@ export function StatusBadge({ status, pulse }: StatusBadgeProps) {
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-current" />
         </span>
       )}
-      {titleCase(status)}
+      {t(titleCase(status))}
     </span>
   );
 }
