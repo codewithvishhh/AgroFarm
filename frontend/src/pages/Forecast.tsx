@@ -15,6 +15,7 @@ import { Loader } from "../components/Loader";
 import { Panel } from "../components/Panel";
 import { StatCard } from "../components/StatCard";
 import { useFetch } from "../hooks/useFetch";
+import { useLanguage } from "../i18n/LanguageContext";
 import { forecastApi } from "../services/api";
 import { formatDate } from "../utils/format";
 
@@ -28,6 +29,7 @@ const tooltipStyle = {
 };
 
 export function Forecast() {
+  const { t } = useLanguage();
   const [produce, setProduce] = useState("Tomato");
 
   const produceTypes = useFetch(
@@ -73,7 +75,7 @@ export function Forecast() {
                 : "border-husk/12 bg-husk/4 text-moss backdrop-blur hover:border-husk/25 hover:text-husk"
             }`}
           >
-            {item}
+            {t(item)}
           </button>
         ))}
       </div>
@@ -117,8 +119,8 @@ export function Forecast() {
           </div>
 
           <Panel
-            title={`${data.produce_type} demand`}
-            description={`Recorded demand and the next seven days. Method: ${data.method.toLowerCase()}.`}
+            title={`${t(data.produce_type)} ${t("demand")}`}
+            description={`${t("Recorded demand and the next seven days.")} ${t("Method:")} ${data.method.toLowerCase()}.`}
           >
             <ResponsiveContainer width="100%" height={320}>
               <AreaChart
@@ -148,7 +150,7 @@ export function Forecast() {
                 <Area
                   type="monotone"
                   dataKey="actual"
-                  name="Recorded demand"
+                  name={t("Recorded demand")}
                   stroke="#4FBF7A"
                   strokeWidth={2}
                   fill="url(#actualFill)"
@@ -157,7 +159,7 @@ export function Forecast() {
                 <Area
                   type="monotone"
                   dataKey="forecast"
-                  name="Forecast demand"
+                  name={t("Forecast demand")}
                   stroke="#5AA9CE"
                   strokeWidth={2}
                   strokeDasharray="5 4"
@@ -168,10 +170,7 @@ export function Forecast() {
             </ResponsiveContainer>
 
             <p className="mt-4 text-[11px] leading-relaxed text-moss">
-              This forecast is statistical, not a machine learning model. It
-              takes a weighted moving average of recent demand and adds a linear
-              trend term. The service is isolated so a trained model can replace
-              it without changing this page.
+              {t("This forecast is statistical, not a machine learning model. It takes a weighted moving average of recent demand and adds a linear trend term. The service is isolated so a trained model can replace it without changing this page.")}
             </p>
           </Panel>
 
@@ -184,8 +183,8 @@ export function Forecast() {
               <table className="w-full min-w-[30rem] text-left text-sm">
                 <thead>
                   <tr className="text-[11px] text-moss">
-                    <th className="px-5 py-3 font-medium">Date</th>
-                    <th className="px-5 py-3 font-medium">Forecast demand</th>
+                    <th className="px-5 py-3 font-medium">{t("Date")}</th>
+                    <th className="px-5 py-3 font-medium">{t("Forecast demand")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-husk/8">

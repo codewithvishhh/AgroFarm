@@ -9,6 +9,7 @@ import { ShipmentTable } from "../components/ShipmentTable";
 import { useAuth } from "../hooks/useAuth";
 import { useFetch } from "../hooks/useFetch";
 import { mergeShipment, useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { shipmentsApi, vehiclesApi, warehousesApi } from "../services/api";
 import type { Shipment, ShipmentStatus } from "../types";
 
@@ -23,6 +24,7 @@ const FILTERS: (ShipmentStatus | "ALL")[] = [
 
 export function Shipments() {
   const { session } = useAuth();
+  const { t } = useLanguage();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [filter, setFilter] = useState<ShipmentStatus | "ALL">("ALL");
   const [search, setSearch] = useState("");
@@ -81,9 +83,8 @@ export function Shipments() {
               }`}
             >
               {option === "ALL"
-                ? "All"
-                : option.charAt(0) +
-                  option.slice(1).toLowerCase().replace("_", " ")}
+                ? t("All")
+                : t(option.charAt(0) + option.slice(1).toLowerCase().replace("_", " "))}
             </button>
           ))}
         </div>
@@ -92,18 +93,18 @@ export function Shipments() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search produce, hub, farmer, or ID"
+            placeholder={t("Search produce, hub, farmer, or ID")}
             className="w-full rounded-lg border border-husk/12 bg-soil-800/55 backdrop-blur px-3 py-2 text-xs text-husk outline-none transition-colors placeholder:text-moss/60 focus:border-crop/60 sm:w-64"
           />
           {canCreate && (
-            <Button onClick={() => setFormOpen(true)}>New shipment</Button>
+            <Button onClick={() => setFormOpen(true)}>{t("New shipment")}</Button>
           )}
         </div>
       </div>
 
       {state.error && state.fromCache && (
         <p className="rounded-lg border border-harvest/35 bg-harvest/10 px-3 py-2 text-[11px] text-harvest">
-          Showing cached shipments. {state.error}
+          {t("Showing cached shipments.")} {state.error}
         </p>
       )}
 
@@ -118,7 +119,7 @@ export function Shipments() {
             hint="Change the filter, or create a request to move produce from a farm gate to a retailer."
             action={
               canCreate ? (
-                <Button onClick={() => setFormOpen(true)}>New shipment</Button>
+                <Button onClick={() => setFormOpen(true)}>{t("New shipment")}</Button>
               ) : undefined
             }
           />
