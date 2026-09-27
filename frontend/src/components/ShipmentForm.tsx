@@ -5,6 +5,7 @@ import { dialogMotion } from "../animations/variants";
 import { shipmentsApi } from "../services/api";
 import type { Retailer, Shipment, Vehicle, Warehouse } from "../types";
 import { useAuth } from "../hooks/useAuth";
+import { useLanguage } from "../i18n/LanguageContext";
 import { Button } from "./Button";
 
 /** Farm gates used as pickup presets. */
@@ -49,6 +50,7 @@ export function ShipmentForm({
   onCreated,
 }: ShipmentFormProps) {
   const { session } = useAuth();
+  const { t } = useLanguage();
   const [produce, setProduce] = useState(PRODUCE[0].name);
   const [quantity, setQuantity] = useState("1500");
   const [unit, setUnit] = useState("kg");
@@ -77,12 +79,12 @@ export function ShipmentForm({
     setError(null);
     const amount = Number(quantity);
     if (!Number.isFinite(amount) || amount <= 0) {
-      setError("Enter a quantity above zero.");
+      setError(t("Pick a quantity above zero."));
       return;
     }
     const retailer = retailers.find((item) => item.retailer_id === retailerId);
     if (!retailer) {
-      setError("Pick a destination retailer.");
+      setError(t("Pick a destination retailer."));
       return;
     }
     const from = FARM_HUBS.find((hub) => hub.name === source)!;
@@ -137,17 +139,16 @@ export function ShipmentForm({
           >
             <header className="border-b border-husk/8 px-5 py-4">
               <h2 className="font-display text-sm text-husk">
-                Create produce shipment
+                {t("Create produce shipment")}
               </h2>
               <p className="mt-1 text-[11px] text-moss">
-                The request goes to the collection team, who assign a vehicle and
-                pick up the load.
+                {t("The request goes to the collection team, who assign a vehicle and pick up the load.")}
               </p>
             </header>
 
             <div className="grid grid-cols-2 gap-4 px-5 py-5">
               <label className="text-[11px] text-moss">
-                Produce
+                {t("Produce")}
                 <select
                   value={produce}
                   onChange={(event) => {
@@ -161,7 +162,7 @@ export function ShipmentForm({
                 >
                   {PRODUCE.map((item) => (
                     <option key={item.name} value={item.name}>
-                      {item.name}
+                      {t(item.name)}
                     </option>
                   ))}
                 </select>
@@ -169,7 +170,7 @@ export function ShipmentForm({
 
               <div className="grid grid-cols-[1fr_5.5rem] gap-2">
                 <label className="text-[11px] text-moss">
-                  Quantity
+                  {t("Quantity")}
                   <input
                     value={quantity}
                     onChange={(event) => setQuantity(event.target.value)}
@@ -178,7 +179,7 @@ export function ShipmentForm({
                   />
                 </label>
                 <label className="text-[11px] text-moss">
-                  Unit
+                  {t("Unit")}
                   <select
                     value={unit}
                     onChange={(event) => setUnit(event.target.value)}
@@ -192,7 +193,7 @@ export function ShipmentForm({
               </div>
 
               <label className="text-[11px] text-moss">
-                Pickup village
+                {t("Pickup village")}
                 <select
                   value={source}
                   onChange={(event) => setSource(event.target.value)}
@@ -207,7 +208,7 @@ export function ShipmentForm({
               </label>
 
               <label className="text-[11px] text-moss">
-                Destination retailer
+                {t("Destination retailer")}
                 <select
                   value={retailerId}
                   onChange={(event) => setRetailerId(event.target.value)}
@@ -225,13 +226,13 @@ export function ShipmentForm({
               </label>
 
               <label className="text-[11px] text-moss">
-                Storage warehouse
+                {t("Storage warehouse")}
                 <select
                   value={warehouseId}
                   onChange={(event) => setWarehouseId(event.target.value)}
                   className={`mt-1 ${fieldClass}`}
                 >
-                  <option value="">Decide later</option>
+                  <option value="">{t("Decide later")}</option>
                   {warehouses.map((warehouse) => (
                     <option
                       key={warehouse.warehouse_id}
@@ -244,13 +245,13 @@ export function ShipmentForm({
               </label>
 
               <label className="text-[11px] text-moss">
-                Vehicle
+                {t("Vehicle")}
                 <select
                   value={vehicleId}
                   onChange={(event) => setVehicleId(event.target.value)}
                   className={`mt-1 ${fieldClass}`}
                 >
-                  <option value="">Assign later</option>
+                  <option value="">{t("Assign later")}</option>
                   {vehicles
                     .filter((vehicle) => vehicle.status === "AVAILABLE")
                     .map((vehicle) => (
@@ -262,7 +263,7 @@ export function ShipmentForm({
               </label>
 
               <label className="col-span-2 text-[11px] text-moss">
-                Delivery deadline
+                {t("Delivery deadline")}
                 <input
                   type="datetime-local"
                   value={deadline}
@@ -280,10 +281,10 @@ export function ShipmentForm({
 
             <footer className="flex justify-end gap-2 border-t border-husk/8 px-5 py-4">
               <Button variant="ghost" onClick={onClose}>
-                Cancel
+                {t("Cancel")}
               </Button>
               <Button onClick={submit} disabled={saving}>
-                {saving ? "Creating" : "Create shipment"}
+                {saving ? t("Creating") : t("Create shipment")}
               </Button>
             </footer>
           </motion.div>
