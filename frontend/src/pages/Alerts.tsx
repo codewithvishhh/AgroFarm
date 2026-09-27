@@ -10,6 +10,7 @@ import { StatCard } from "../components/StatCard";
 import { StatusBadge } from "../components/StatusBadge";
 import { useFetch } from "../hooks/useFetch";
 import { useLiveEvent } from "../hooks/useLive";
+import { useLanguage } from "../i18n/LanguageContext";
 import { alertsApi } from "../services/api";
 import type { Alert, AlertSeverity } from "../types";
 import { formatDateTime, titleCase } from "../utils/format";
@@ -22,6 +23,7 @@ const SEVERITIES: (AlertSeverity | "ALL")[] = [
 ];
 
 export function Alerts() {
+  const { t } = useLanguage();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [severity, setSeverity] = useState<AlertSeverity | "ALL">("ALL");
   const [type, setType] = useState("ALL");
@@ -101,7 +103,7 @@ export function Alerts() {
                 : "border-husk/12 bg-husk/4 text-moss backdrop-blur hover:border-husk/25 hover:text-husk"
             }`}
           >
-            {option === "ALL" ? "All severities" : titleCase(option)}
+            {option === "ALL" ? t("All severities") : t(titleCase(option))}
           </button>
         ))}
 
@@ -110,10 +112,10 @@ export function Alerts() {
           onChange={(event) => setType(event.target.value)}
           className="rounded-lg border border-husk/12 bg-soil-800/55 backdrop-blur px-2.5 py-1.5 text-[11px] text-husk outline-none focus:border-crop/60"
         >
-          <option value="ALL">All types</option>
+          <option value="ALL">{t("All types")}</option>
           {types.map((option) => (
             <option key={option} value={option}>
-              {titleCase(option)}
+              {t(titleCase(option))}
             </option>
           ))}
         </select>
@@ -125,7 +127,7 @@ export function Alerts() {
             onChange={(event) => setOpenOnly(event.target.checked)}
             className="accent-crop"
           />
-          Open only
+          {t("Open only")}
         </label>
       </div>
 
@@ -148,11 +150,11 @@ export function Alerts() {
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge status={alert.severity} />
                     <span className="text-[11px] text-moss">
-                      {titleCase(alert.alert_type)}
+                      {t(titleCase(alert.alert_type))}
                     </span>
                     {alert.audience && (
                       <span className="rounded-full border border-husk/12 px-2 py-0.5 text-[10px] text-moss">
-                        {titleCase(alert.audience)}
+                        {t(titleCase(alert.audience))}
                       </span>
                     )}
                   </div>
@@ -180,7 +182,7 @@ export function Alerts() {
                       onClick={() => alertsApi.markRead(alert.id).then(update)}
                     >
                       <Eye size={12} />
-                      Mark read
+                      {t("Mark read")}
                     </Button>
                   )}
                   {!alert.is_resolved && (
@@ -189,7 +191,7 @@ export function Alerts() {
                       onClick={() => alertsApi.resolve(alert.id).then(update)}
                     >
                       <Check size={12} />
-                      Resolve
+                      {t("Resolve")}
                     </Button>
                   )}
                 </div>
