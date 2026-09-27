@@ -5,6 +5,7 @@ import { EmptyState } from "../components/EmptyState";
 import { Loader } from "../components/Loader";
 import { Panel } from "../components/Panel";
 import { useFetch } from "../hooks/useFetch";
+import { useLanguage } from "../i18n/LanguageContext";
 import { inventoryApi, warehousesApi } from "../services/api";
 import type { TransactionType } from "../types";
 import { formatDateTime, formatQuantity, titleCase } from "../utils/format";
@@ -32,6 +33,7 @@ const fieldClass =
 
 /** Inventory track record: one row per quantity movement, with the balance. */
 export function InventoryHistory() {
+  const { t } = useLanguage();
   const [warehouseId, setWarehouseId] = useState("");
   const [produce, setProduce] = useState("");
   const [type, setType] = useState<TransactionType | "">("");
@@ -62,13 +64,13 @@ export function InventoryHistory() {
       <Panel title="Filters" description="Narrow the track record">
         <div className="flex flex-wrap items-end gap-2">
           <label className="text-[11px] text-moss">
-            Warehouse
+            {t("Warehouse")}
             <select
               value={warehouseId}
               onChange={(event) => setWarehouseId(event.target.value)}
               className={`mt-1 block ${fieldClass}`}
             >
-              <option value="">All warehouses</option>
+              <option value="">{t("All warehouses")}</option>
               {(warehouses.data ?? []).map((warehouse) => (
                 <option
                   key={warehouse.warehouse_id}
@@ -81,13 +83,13 @@ export function InventoryHistory() {
           </label>
 
           <label className="text-[11px] text-moss">
-            Produce
+            {t("Produce")}
             <select
               value={produce}
               onChange={(event) => setProduce(event.target.value)}
               className={`mt-1 block ${fieldClass}`}
             >
-              <option value="">All produce</option>
+              <option value="">{t("All produce")}</option>
               {produceTypes.map((item) => (
                 <option key={item} value={item}>
                   {item}
@@ -97,7 +99,7 @@ export function InventoryHistory() {
           </label>
 
           <label className="text-[11px] text-moss">
-            Movement type
+            {t("Movement type")}
             <select
               value={type}
               onChange={(event) =>
@@ -105,17 +107,17 @@ export function InventoryHistory() {
               }
               className={`mt-1 block ${fieldClass}`}
             >
-              <option value="">All types</option>
+              <option value="">{t("All types")}</option>
               {TYPES.map((option) => (
                 <option key={option} value={option}>
-                  {titleCase(option)}
+                  {t(titleCase(option))}
                 </option>
               ))}
             </select>
           </label>
 
           <label className="text-[11px] text-moss">
-            From
+            {t("From")}
             <input
               type="date"
               value={from}
@@ -125,7 +127,7 @@ export function InventoryHistory() {
           </label>
 
           <label className="text-[11px] text-moss">
-            To
+            {t("To")}
             <input
               type="date"
               value={to}
@@ -144,14 +146,14 @@ export function InventoryHistory() {
             }}
             className="rounded-lg px-2.5 py-2 text-[11px] text-moss hover:text-husk"
           >
-            Clear
+            {t("Clear")}
           </button>
         </div>
       </Panel>
 
       <Panel
         title="Inventory history"
-        description={`${rows.length} movements recorded`}
+        description={`${rows.length} ${t("movements recorded")}`}
         bodyClassName="p-0"
       >
         {history.loading && rows.length === 0 ? (
@@ -168,12 +170,12 @@ export function InventoryHistory() {
             <table className="w-full min-w-[52rem] text-left text-sm">
               <thead>
                 <tr className="text-[11px] text-moss">
-                  <th className="px-5 py-3 font-medium">Date</th>
-                  <th className="px-5 py-3 font-medium">Produce</th>
-                  <th className="px-5 py-3 font-medium">Quantity</th>
-                  <th className="px-5 py-3 font-medium">Type</th>
-                  <th className="px-5 py-3 font-medium">Shipment</th>
-                  <th className="px-5 py-3 text-right font-medium">Balance</th>
+                  <th className="px-5 py-3 font-medium">{t("Date")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Produce")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Quantity")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Type")}</th>
+                  <th className="px-5 py-3 font-medium">{t("Shipment")}</th>
+                  <th className="px-5 py-3 text-right font-medium">{t("Balance")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-husk/8">
@@ -183,7 +185,7 @@ export function InventoryHistory() {
                       {formatDateTime(row.timestamp)}
                     </td>
                     <td className="px-5 py-3 text-xs text-husk">
-                      {row.produce_type}
+                      {t(row.produce_type)}
                     </td>
                     <td className="px-5 py-3 text-xs tabular-nums text-husk">
                       {formatQuantity(row.quantity, row.unit)}
@@ -191,7 +193,7 @@ export function InventoryHistory() {
                     <td
                       className={`px-5 py-3 text-xs ${TONE[row.transaction_type] ?? "text-moss"}`}
                     >
-                      {titleCase(row.transaction_type)}
+                      {t(titleCase(row.transaction_type))}
                     </td>
                     <td className="px-5 py-3 text-xs">
                       {row.reference_shipment ? (
